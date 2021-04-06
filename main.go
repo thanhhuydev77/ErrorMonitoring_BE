@@ -16,7 +16,7 @@ import (
 func main() {
 	ReadConfigfile()
 	r := Controllers.NewRouter()
-	Database.GetDbInstance()
+	Database.GetMongoClient()
 	Controllers.InitAllController(r)
 	//allow all method CORS
 	handler := cors.AllowAll().Handler(r)
@@ -29,7 +29,7 @@ func ReadConfigfile() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("Successfully Opened")
+	fmt.Println("Opened successfully")
 	// defer the closing of our jsonFile so that we can parse it later on
 	defer jsonFile.Close()
 

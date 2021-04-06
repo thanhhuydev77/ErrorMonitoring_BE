@@ -1,7 +1,23 @@
 package Models
 
 type User struct {
-	UserName string `json:"userName"`
+	Email        string        `json:"email"`
+	Organization string        `json:"organization"`
+	Position     string        `json:"position"`
+	Avatar       string        `json:"avatar"`
+	PassWord     string        `json:"passWord"`
+	FullName     string        `json:"fullName"`
+	MainPlatform string        `json:"mainPlatform"`
+	ProjectList  []ProjectList `json:"projectList"`
+}
+type ProjectList struct {
+	ProjectId string `json:"projectId"`
+	Role      string `json:"role"`
+}
+
+type UserRequest struct {
+	Type     string `json:"type"`
+	Email    string `json:"email"`
 	PassWord string `json:"passWord"`
 	FullName string `json:"fullName"`
 }

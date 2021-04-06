@@ -1,42 +1,86 @@
 package Database
 
 import (
-	"database/sql"
+	"context"
 	_ "database/sql"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/crypto/bcrypt"
+	"log"
 	_ "log"
 	"main.go/Models"
 	_ "strconv"
 )
 
 //login
-func Login(db *sql.DB, username string, pass string) (bool, bool, Models.User) {
+func Login(Email string, pass string) (bool, bool) {
 	exsist := false
 	passOK := false
-	a := Models.User{}
+	user := Models.User{}
+	// Query all users
+	if clientInstance == nil {
+		log.Print("can not connect to database!")
+		return exsist, false
+	}
 
-	return exsist, passOK, a
+	//Define filter query for fetching specific document from collection
+	filter := bson.D{primitive.E{Key: "email", Value: Email}}
+	//Get MongoDB connection using connectionhelper.
+	client, err := GetMongoClient()
+	if err != nil {
+		log.Print(err.Error())
+		return false, false
+	}
+	//Create a handle to the respective collection in the database.
+	collection := client.Database(DB).Collection(User)
+	//Perform FindOne operation & validate against the error.
+	err = collection.FindOne(context.TODO(), filter).Decode(&user)
+	if err != nil {
+		log.Print(err.Error())
+		return false, false
+	}
+	exsist = true
+	if checkPasswordHash(pass, user.PassWord) {
+		passOK = true
+	}
+	return exsist, passOK
 }
 
 //register a new user
-//func Register(db *sql.DB, user MODELS.RequestRegister) (bool, error) {
-//
-//	if db == nil {
-//		log.Print("can not connect to database!")
-//		return false, fmt.Errorf("can not connect to database")
-//	}
-//	passhash, _ := hashPassword(user.Pass)
-//	rows, err := db.Query(`insert into USERS(userName,Pass,FullName,Address,Role,Sex,Province,Email) values(?,?,?,?,?,?,?,?)`, user.UserName, passhash, user.FullName, user.Address, user.Role, user.Sex, user.Province, user.Email)
-//	if err != nil {
-//		fmt.Print("loi:" + err.Error())
-//		return false, err
-//	}
-//
-//	defer rows.Close()
-//	return true, nil
-//}
-//
-////get all user name
-//func GetAllUserName(db *sql.DB) []string {
+func Register(user Models.User) (bool, ErrorCode) {
+
+	if clientInstance == nil {
+		Err := "can not connect to database!"
+		log.Print(Err)
+		return false, DATABASE_ERROR
+	}
+	if CheckDuplicateEmail(user.Email) {
+		return false, DUPLICATE_EMAIL
+	}
+	user.PassWord, _ = hashPassword(user.PassWord)
+
+	collection := clientInstance.Database(DB).Collection(User)
+	//Perform InsertOne operation & validate against the error.
+	_, err := collection.InsertOne(context.TODO(), user)
+	if err != nil {
+		log.Print(err.Error())
+		return false, UNKNOWN_ERROR
+	}
+	return true, NO_ERROR
+}
+func CheckDuplicateEmail(email string) bool {
+	listuser, _ := GetUsers("")
+	for _, user := range listuser {
+		if user.Email == email {
+			return true
+		}
+	}
+	return false
+}
+
+//get all user name
+//func GetAllUserName() []string {
 //	var Allusername []string
 //	//db, err := connectdatabase()
 //	// Query all users
@@ -64,49 +108,60 @@ func Login(db *sql.DB, username string, pass string) (bool, bool, Models.User) {
 //}
 //
 ////hash password by bycript
-//func hashPassword(password string) (string, error) {
-//	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 5)
-//	return string(bytes), err
-//}
+func hashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 5)
+	return string(bytes), err
+}
+
 //
 ////check password hash
-//func checkPasswordHash(password, hash string) bool {
-//	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-//	return err == nil
-//}
+func checkPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
+
 //
 ////get a user or all user(id = -1)
-//func GetUsers(db *sql.DB, Id int) []MODELS.USERS {
-//
-//	//db, err := connectdatabase()
-//	//// Query all users
-//	if db == nil {
-//
-//		log.Print("can not connect to database!")
-//		return nil
-//	}
-//	//defer db.Close()
-//	query := ""
-//	list := []MODELS.USERS{}
-//
-//	if Id == -1 {
-//		query = "select * from USERS"
-//	} else {
-//		query = "select * from USERS where Id = " + strconv.Itoa(Id)
-//	}
-//
-//	rows, err := db.Query(query)
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//	for rows.Next() {
-//		var user MODELS.USERS
-//		err := rows.Scan(&user.Id, &user.UserName, &user.Pass, &user.FullName, &user.IdentifyFront, &user.IdentifyBack, &user.DateBirth, &user.Address,
-//			&user.Role, &user.Sex, &user.Job, &user.WorkPlace, &user.TempReg, &user.Province, &user.Email, &user.Avatar, &user.PhoneNumber)
-//		if err != nil {
-//			log.Fatal(err)
-//		}
-//		list = append(list, user)
-//	}
-//	return list
-//}
+func GetUsers(Id string) ([]Models.User, error) {
+
+	//db, err := connectdatabase()
+	//// Query all users
+	if clientInstance == nil {
+		log.Print("can not connect to database!")
+		return nil, nil
+	}
+	//defer db.Close()
+	list := []Models.User{}
+	var filter bson.D
+	if Id == "" {
+		filter = bson.D{primitive.E{}} //bson.D{{}} specifies 'all documents'
+	} else {
+		filter = bson.D{primitive.E{Key: "_id", Value: Id}}
+	}
+	client, err := GetMongoClient()
+	if err != nil {
+		return list, err
+	}
+	//Create a handle to the respective collection in the database.
+	collection := client.Database(DB).Collection(User)
+	//Perform Find operation & validate against the error.
+	cur, findError := collection.Find(context.TODO(), filter)
+	if findError != nil {
+		return list, findError
+	}
+	//Map result to slice
+	for cur.Next(context.TODO()) {
+		var t Models.User
+		err := cur.Decode(&t)
+		if err != nil {
+			return list, err
+		}
+		list = append(list, t)
+	}
+	// once exhausted, close the cursor
+	cur.Close(context.TODO())
+	if len(list) == 0 {
+		return list, mongo.ErrNoDocuments
+	}
+	return list, nil
+}

@@ -17,9 +17,10 @@ func NewRouter() *mux.Router {
 func InitAllController(r *mux.Router) {
 	//UsersController
 	r.HandleFunc("/user/login", UserLogin).Methods("POST")
-	//r.HandleFunc("/user/register", a.UserRegister).Methods("POST")
+	r.HandleFunc("/user/register", UserRegister).Methods("POST")
+	r.HandleFunc("/user", UserRequest).Methods("POST")
 	//r.Handle("/user/get-all-username", c.Cached(storage, "10s", a.GetallUserName)).Methods("GET")
 	//r.Handle("/user/validate", AuthMW(http.HandlerFunc(ValidateToken))).Methods("POST")
-	//r.Handle("/user/get-user", AuthMW(http.HandlerFunc(a.GetUser))).Methods("GET")
+	r.Handle("/user/get-user", AuthMW(http.HandlerFunc(GetUser))).Methods("GET")
 	//r.Handle("/user/get-user/{Id}", AuthMW(http.HandlerFunc(a.GetUser))).Methods("GET")
 }

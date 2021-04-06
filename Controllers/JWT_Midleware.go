@@ -6,6 +6,7 @@ import (
 	"io"
 	"main.go/Models"
 	"net/http"
+	"time"
 )
 
 //JWT authorization middleware
@@ -34,4 +35,15 @@ func ValidateToken(w http.ResponseWriter, r *http.Request) {
 	}`
 	io.WriteString(w, stringresult)
 	return
+}
+
+func GenerateToken(email string) string {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user": email,
+		"exp":  time.Now().Add(time.Hour * time.Duration(1000*24)).Unix(),
+		"iat":  time.Now().Unix(),
+	})
+	tokenString, _ := token.SignedString([]byte(Models.AppConfig.AppKey))
+
+	return tokenString
 }

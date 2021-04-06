@@ -1,17 +1,13 @@
 package Database
 
-import (
-	"database/sql"
+const (
+	DB   = "EMDB"
+	User = "user"
+
+	DATABASE_ERROR  ErrorCode = -1
+	NO_ERROR        ErrorCode = 0
+	DUPLICATE_EMAIL ErrorCode = 1
+	UNKNOWN_ERROR   ErrorCode = 2
 )
 
-var Db *sql.DB = nil
-
-//get Database instance
-func GetDbInstance() *sql.DB {
-	return nil
-}
-
-//connect to database
-func connectdatabase() (*sql.DB, error) {
-	return nil, nil
-}
+type ErrorCode int
