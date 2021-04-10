@@ -69,6 +69,36 @@ func Register(user Models.User) (bool, ErrorCode) {
 	}
 	return true, NO_ERROR
 }
+
+func Update(user Models.User) bool {
+	if clientInstance == nil {
+		Err := "can not connect to database!"
+		log.Print(Err)
+		return false
+	}
+	filter := bson.D{primitive.E{Key: "email", Value: user.Email}}
+	user.PassWord, _ = hashPassword(user.PassWord)
+	//Define updater for to specifiy change to be updated.
+	updater := bson.D{primitive.E{Key: "$set", Value: bson.D{
+		primitive.E{Key: "fullName", Value: user.FullName},
+		primitive.E{Key: "passWord", Value: user.PassWord},
+		primitive.E{Key: "avatar", Value: user.Avatar},
+		primitive.E{Key: "mainPlatform", Value: user.MainPlatform},
+		primitive.E{Key: "position", Value: user.Position},
+		primitive.E{Key: "organization", Value: user.Organization},
+		primitive.E{Key: "projectList", Value: user.ProjectList},
+	}}}
+	collection := clientInstance.Database(DB).Collection(User)
+
+	//Perform UpdateOne operation & validate against the error.
+	_, err := collection.UpdateOne(context.TODO(), filter, updater)
+	if err != nil {
+		return false
+	}
+	//Return success without any error.
+	return true
+}
+
 func CheckDuplicateEmail(email string) bool {
 	listuser, _ := GetUsers("")
 	for _, user := range listuser {
@@ -136,7 +166,7 @@ func GetUsers(Id string) ([]Models.User, error) {
 	if Id == "" {
 		filter = bson.D{primitive.E{}} //bson.D{{}} specifies 'all documents'
 	} else {
-		filter = bson.D{primitive.E{Key: "_id", Value: Id}}
+		filter = bson.D{primitive.E{Key: "email", Value: Id}}
 	}
 	client, err := GetMongoClient()
 	if err != nil {

@@ -3,14 +3,16 @@ package Controllers
 import (
 	"encoding/json"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/gorilla/mux"
 	_ "github.com/gorilla/mux"
 	"io"
 	"log"
 	"main.go/Business"
+	"main.go/Database"
 	"main.go/GeneralFunction"
 	"main.go/Models"
+	"math/rand"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -18,6 +20,8 @@ import (
 func UserLogin(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Add("Content-Type", "application/json")
+	param1 := r.URL.Query().Get("token")
+	GetEmailFromToken(param1)
 	p := Models.User{}
 	err := json.NewDecoder(r.Body).Decode(&p)
 	if err != nil {
@@ -84,7 +88,7 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 	}
 	if user.Type == "login" {
 
-		IsExist, passOk := Business.Login(user.Email, user.PassWord)
+		IsExist, passOk := Business.Login(user.User.Email, user.User.PassWord)
 
 		if (!passOk) || (!IsExist) {
 			result := GeneralFunction.CreateResponse(0, `Email or password is incorrect, please try again`, Models.EmptyObject{})
@@ -98,8 +102,8 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 		}
 
 		Data := data{
-			Email: user.Email,
-			Token: GenerateToken(user.Email),
+			Email: user.User.Email,
+			Token: GenerateToken(user.User.Email),
 		}
 		result := GeneralFunction.CreateResponse(1, `Login success`, Data)
 		io.WriteString(w, result)
@@ -107,7 +111,7 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if user.Type == "register" {
-		_, errCode := Business.Register(GeneralFunction.ConvertUserRequesttoUser(user))
+		_, errCode := Business.Register(user.User)
 		switch errCode {
 		case 0:
 			result := GeneralFunction.CreateResponse(1, `Register success!`, Models.EmptyObject{})
@@ -120,6 +124,47 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 			io.WriteString(w, result)
 		}
 
+		return
+	}
+
+	if user.Type == "update" {
+		isSuccessed := Business.Update(user.User)
+		if !isSuccessed {
+			result := GeneralFunction.CreateResponse(0, `Update user failed!`, Models.EmptyObject{})
+			io.WriteString(w, result)
+		}
+		result := GeneralFunction.CreateResponse(1, `Update user success!`, Models.EmptyObject{})
+		io.WriteString(w, result)
+		return
+	}
+	if user.Type == "forgot-password" {
+		min := 100000
+		max := 999999
+		//code random
+		randCode := rand.Intn(max-min) + min
+
+		//token
+		token := GenerateToken(user.User.Email)
+		//mail
+		SentOK := GeneralFunction.SendMail(user.User.Email, Database.EMAILSUBJECT, Database.EMAILTEXT+strconv.Itoa(randCode))
+
+		if SentOK {
+			type data struct {
+				Code  int    `json:"code"`
+				Token string `json:"token"`
+				Email string `json:"email"`
+			}
+			Data := data{
+				Code:  randCode,
+				Token: token,
+				Email: user.User.Email,
+			}
+			result := GeneralFunction.CreateResponse(1, `Request change password success`, Data)
+			io.WriteString(w, result)
+			return
+		}
+		result := GeneralFunction.CreateResponse(0, `Request change password failed`, Models.EmptyObject{})
+		io.WriteString(w, result)
 		return
 	}
 }
@@ -148,23 +193,19 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 ////get a user with id or all user(id =-1)
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-	vars := mux.Vars(r)
-	Id := vars["Id"]
+	//vars := mux.Vars(r)
+	//Id := vars["Id"]
 
-	List, err := Business.GetUsers(Id)
+	token := r.URL.Query().Get("token")
+	email := GetEmailFromToken(token)
+	log.Print("email :" + email)
+	List, err := Business.GetUsers(email)
 	if err != nil {
-		log.Print(err.Error())
+		result := GeneralFunction.CreateResponse(0, `Unauthentication!`, Models.EmptyObject{})
+		io.WriteString(w, result)
+		return
 	}
-	jsonlist, _ := json.Marshal(List)
-	result := List[0]
-
-	stringresult := `{"message": "Get Users success","status": 200,"data":{"user":`
-	if len(List) == 1 {
-		jsonresult, _ := json.Marshal(result)
-		stringresult += string(jsonresult)
-	} else {
-		stringresult += string(jsonlist)
-	}
-	stringresult += "}}"
-	io.WriteString(w, stringresult)
+	result := GeneralFunction.CreateResponse(1, `Authentication success!`, List[0])
+	io.WriteString(w, result)
+	return
 }

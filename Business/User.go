@@ -16,6 +16,12 @@ func Register(user Models.User) (bool, Database.ErrorCode) {
 	return Database.Register(user)
 }
 
+//update
+func Update(user Models.User) bool {
+	return Database.Update(user)
+
+}
+
 //
 ////get all username
 //func GetAllUserName(db *sql.DB) []string {

@@ -16,8 +16,6 @@ type ProjectList struct {
 }
 
 type UserRequest struct {
-	Type     string `json:"type"`
-	Email    string `json:"email"`
-	PassWord string `json:"passWord"`
-	FullName string `json:"fullName"`
+	Type string `json:"type"`
+	User User   `json:"user"`
 }
