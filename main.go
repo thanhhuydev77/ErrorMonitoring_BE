@@ -24,7 +24,7 @@ func main() {
 	http.ListenAndServe(":8001", handler)
 }
 func ReadConfigfile() {
-	jsonFile, err := os.Open("AppConfig.json")
+	jsonFile, err := os.Open("Config/AppConfig.json")
 	// if we os.Open returns an error then handle it
 	if err != nil {
 		fmt.Println(err)
