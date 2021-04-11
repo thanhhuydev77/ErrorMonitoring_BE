@@ -80,13 +80,13 @@ func Update(user Models.User) bool {
 	user.PassWord, _ = hashPassword(user.PassWord)
 	//Define updater for to specifiy change to be updated.
 	updater := bson.D{primitive.E{Key: "$set", Value: bson.D{
-		primitive.E{Key: "fullName", Value: user.FullName},
-		primitive.E{Key: "passWord", Value: user.PassWord},
+		primitive.E{Key: "fullname", Value: user.FullName},
+		primitive.E{Key: "password", Value: user.PassWord},
 		primitive.E{Key: "avatar", Value: user.Avatar},
-		primitive.E{Key: "mainPlatform", Value: user.MainPlatform},
+		primitive.E{Key: "mainplatform", Value: user.MainPlatform},
 		primitive.E{Key: "position", Value: user.Position},
 		primitive.E{Key: "organization", Value: user.Organization},
-		primitive.E{Key: "projectList", Value: user.ProjectList},
+		primitive.E{Key: "projectlist", Value: user.ProjectList},
 	}}}
 	collection := clientInstance.Database(DB).Collection(User)
 

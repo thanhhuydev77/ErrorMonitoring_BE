@@ -2,7 +2,6 @@ package Controllers
 
 import (
 	"encoding/json"
-	"github.com/dgrijalva/jwt-go"
 	_ "github.com/gorilla/mux"
 	"io"
 	"log"
@@ -13,76 +12,14 @@ import (
 	"math/rand"
 	"net/http"
 	"strconv"
-	"time"
 )
-
-//login with username and pass from body request
-func UserLogin(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Add("Content-Type", "application/json")
-	param1 := r.URL.Query().Get("token")
-	GetEmailFromToken(param1)
-	p := Models.User{}
-	err := json.NewDecoder(r.Body).Decode(&p)
-	if err != nil {
-		io.WriteString(w, `{"message": "wrong format!"}`)
-		return
-	}
-
-	IsExsist, passok := Business.Login(p.Email, p.PassWord)
-
-	if !IsExsist {
-		result := GeneralFunction.CreateResponse(0, `Can't find user please sign in again!`, `{}`)
-		io.WriteString(w, result)
-		return
-	}
-
-	if !passok {
-		//w.WriteHeader(http.StatusUnauthorized)
-		io.WriteString(w, `{"message": "Your password is wrong, please type again !"}`)
-		return
-	}
-	// expired after 1000 dates
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user": p.Email,
-		"exp":  time.Now().Add(time.Hour * time.Duration(1000*24)).Unix(),
-		"iat":  time.Now().Unix(),
-	})
-	tokenString, _ := token.SignedString([]byte(Models.AppConfig.AppKey))
-	io.WriteString(w, tokenString)
-	return
-}
-
-//register a new user
-func UserRegister(w http.ResponseWriter, r *http.Request) {
-	w.Header().Add("Content-Type", "application/json")
-	user := Models.User{}
-	err1 := json.NewDecoder(r.Body).Decode(&user)
-	if err1 != nil {
-		io.WriteString(w, `{"message": "wrong format!"}`)
-		return
-	}
-
-	_, errCode := Business.Register(user)
-	if errCode == 0 {
-		io.WriteString(w, `{
-			 	"status": 200,
-				"message":"Register success",
-				"data": {
-					"status": 1
-				}
-			}`)
-	} else {
-		io.WriteString(w, `{"message":"Register fail"}`)
-	}
-}
 
 func UserRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	user := Models.UserRequest{}
 	err1 := json.NewDecoder(r.Body).Decode(&user)
 	if err1 != nil {
-		result := GeneralFunction.CreateResponse(0, `Can't login, please try again!`, Models.EmptyObject{})
+		result := GeneralFunction.CreateResponse(0, `wrong format, please try again!`, Models.EmptyObject{})
 		io.WriteString(w, result)
 		return
 	}
@@ -109,9 +46,11 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, result)
 		return
 	}
-
 	if user.Type == "register" {
-		_, errCode := Business.Register(user.User)
+		errCode := Database.UNKNOWN_ERROR
+		if GeneralFunction.ValidateEmail(user.User.Email) {
+			_, errCode = Business.Register(user.User)
+		}
 		switch errCode {
 		case 0:
 			result := GeneralFunction.CreateResponse(1, `Register success!`, Models.EmptyObject{})
@@ -126,8 +65,9 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-
 	if user.Type == "update" {
+		token := r.URL.Query().Get("token")
+		user.User.Email = GetEmailFromToken(token)
 		isSuccessed := Business.Update(user.User)
 		if !isSuccessed {
 			result := GeneralFunction.CreateResponse(0, `Update user failed!`, Models.EmptyObject{})
@@ -142,7 +82,6 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 		max := 999999
 		//code random
 		randCode := rand.Intn(max-min) + min
-
 		//token
 		token := GenerateToken(user.User.Email)
 		//mail
@@ -169,28 +108,6 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//get all user names
-//func (a *ApiDB) GetallUserName(w http.ResponseWriter, r *http.Request) {
-//	// Query()["key"] will return an array of items,
-//	// we only want the single item.
-//
-//	allusername := BUSINESS.GetAllUserName(a.Db)
-//	w.Header().Add("Content-Type", "application/json")
-//	if allusername == nil {
-//		//w.WriteHeader(http.StatusBadRequest)
-//		io.WriteString(w, `{"message":"get all username unsuccess"}`)
-//		return
-//	}
-//	type result struct {
-//		Message string   `json:"message"`
-//		Data    []string `json:"data"`
-//	}
-//	Result, _ := json.Marshal(result{Message: "get all username success", Data: allusername})
-//	//w.WriteHeader(200)
-//	io.WriteString(w, string(Result))
-//}
-//
-////get a user with id or all user(id =-1)
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	//vars := mux.Vars(r)

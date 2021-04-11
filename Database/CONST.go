@@ -3,8 +3,8 @@ package Database
 const (
 	DB                        = "EMDB"
 	User                      = "user"
-	EMAILSUBJECT              = "Xác minh email Error Monitoring"
-	EMAILTEXT                 = "Xin chào,\n\nChúng tôi đã nhận được yêu cầu thay đổi mật khẩu của bạn.\n\nVui lòng xác minh bằng cách dán mã bên dưới:"
+	EMAILSUBJECT              = "[EM] Password Reset Request"
+	EMAILTEXT                 = "Hi Sir/Madam,\nWe have received a request to change your password.\nPlease verify using the following code : "
 	DATABASE_ERROR  ErrorCode = -1
 	NO_ERROR        ErrorCode = 0
 	DUPLICATE_EMAIL ErrorCode = 1

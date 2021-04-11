@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	gomail "gopkg.in/mail.v2"
 	"main.go/Models"
+	"regexp"
 )
 
 //func ConvertUserRequesttoUser(request Models.UserRequest) Models.User {
@@ -52,4 +53,12 @@ func CreateResponse(Type int, Message string, Data interface{}) string {
 	failRes.Data = Data
 	result, _ := json.Marshal(failRes)
 	return string(result)
+}
+func ValidateEmail(e string) bool {
+	var emailRegex = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+	if len(e) < 3 && len(e) > 254 {
+		return false
+	}
+	return emailRegex.MatchString(e)
+
 }
