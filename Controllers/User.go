@@ -78,6 +78,12 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if user.Type == "forgot-password" {
+		EmailExsisted := Business.CheckUserExsist(user.User.Email)
+		if !EmailExsisted {
+			result := GeneralFunction.CreateResponse(0, `Email unregistered!`, Models.EmptyObject{})
+			io.WriteString(w, result)
+			return
+		}
 		min := 100000
 		max := 999999
 		//code random

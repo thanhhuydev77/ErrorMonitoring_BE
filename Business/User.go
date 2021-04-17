@@ -22,13 +22,15 @@ func Update(user Models.User) bool {
 
 }
 
-//
-////get all username
-//func GetAllUserName(db *sql.DB) []string {
-//	return DATABASE.GetAllUserName(db)
-//}
-//
 ////get a user or all users
 func GetUsers(Id string) ([]Models.User, error) {
 	return Database.GetUsers(Id)
+}
+
+func CheckUserExsist(email string) bool {
+	user, _ := Database.GetUsers(email)
+	if len(user) == 0 {
+		return false
+	}
+	return true
 }
