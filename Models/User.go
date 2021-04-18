@@ -5,7 +5,7 @@ type User struct {
 	Organization string        `json:"organization"`
 	Position     string        `json:"position"`
 	Avatar       string        `json:"avatar"`
-	Password     string        `json:"passWord"`
+	Password     string        `json:"password"`
 	FullName     string        `json:"fullName"`
 	MainPlatform string        `json:"mainPlatform"`
 	ProjectList  []ProjectList `json:"projectList"`
