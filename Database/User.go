@@ -41,7 +41,7 @@ func Login(Email string, pass string) (bool, bool) {
 		return false, false
 	}
 	exsist = true
-	if checkPasswordHash(pass, user.PassWord) {
+	if checkPasswordHash(pass, user.Password) {
 		passOK = true
 	}
 	return exsist, passOK
@@ -58,7 +58,7 @@ func Register(user Models.User) (bool, ErrorCode) {
 	if CheckDuplicateEmail(user.Email) {
 		return false, DUPLICATE_EMAIL
 	}
-	user.PassWord, _ = hashPassword(user.PassWord)
+	user.Password, _ = hashPassword(user.Password)
 
 	collection := clientInstance.Database(DB).Collection(User)
 	//Perform InsertOne operation & validate against the error.
@@ -77,11 +77,11 @@ func Update(user Models.User) bool {
 		return false
 	}
 	filter := bson.D{primitive.E{Key: "email", Value: user.Email}}
-	user.PassWord, _ = hashPassword(user.PassWord)
+	user.Password, _ = hashPassword(user.Password)
 	//Define updater for to specifiy change to be updated.
 	updater := bson.D{primitive.E{Key: "$set", Value: bson.D{
 		primitive.E{Key: "fullname", Value: user.FullName},
-		primitive.E{Key: "password", Value: user.PassWord},
+		primitive.E{Key: "password", Value: user.Password},
 		primitive.E{Key: "avatar", Value: user.Avatar},
 		primitive.E{Key: "mainplatform", Value: user.MainPlatform},
 		primitive.E{Key: "position", Value: user.Position},

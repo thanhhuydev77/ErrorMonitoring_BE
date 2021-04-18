@@ -25,7 +25,7 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 	}
 	if user.Type == "login" {
 
-		IsExist, passOk := Business.Login(user.User.Email, user.User.PassWord)
+		IsExist, passOk := Business.Login(user.User.Email, user.User.Password)
 
 		if (!passOk) || (!IsExist) {
 			result := GeneralFunction.CreateResponse(0, `Email or password is incorrect, please try again`, Models.EmptyObject{})
