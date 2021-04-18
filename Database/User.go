@@ -9,6 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	_ "log"
+	"main.go/General"
 	"main.go/Models"
 	_ "strconv"
 )
@@ -33,7 +34,7 @@ func Login(Email string, pass string) (bool, bool) {
 		return false, false
 	}
 	//Create a handle to the respective collection in the database.
-	collection := client.Database(DB).Collection(User)
+	collection := client.Database(General.DB).Collection(General.User)
 	//Perform FindOne operation & validate against the error.
 	err = collection.FindOne(context.TODO(), filter).Decode(&user)
 	if err != nil {
@@ -48,26 +49,26 @@ func Login(Email string, pass string) (bool, bool) {
 }
 
 //register a new user
-func Register(user Models.User) (bool, ErrorCode) {
+func Register(user Models.User) (bool, General.ErrorCode) {
 
 	if clientInstance == nil {
 		Err := "can not connect to database!"
 		log.Print(Err)
-		return false, DATABASE_ERROR
+		return false, General.DATABASE_ERROR
 	}
 	if CheckDuplicateEmail(user.Email) {
-		return false, DUPLICATE_EMAIL
+		return false, General.DUPLICATE_EMAIL
 	}
 	user.Password, _ = hashPassword(user.Password)
 
-	collection := clientInstance.Database(DB).Collection(User)
+	collection := clientInstance.Database(General.DB).Collection(General.User)
 	//Perform InsertOne operation & validate against the error.
 	_, err := collection.InsertOne(context.TODO(), user)
 	if err != nil {
 		log.Print(err.Error())
-		return false, UNKNOWN_ERROR
+		return false, General.UNKNOWN_ERROR
 	}
-	return true, NO_ERROR
+	return true, General.NO_ERROR
 }
 
 func Update(user Models.User) bool {
@@ -88,7 +89,7 @@ func Update(user Models.User) bool {
 		primitive.E{Key: "organization", Value: user.Organization},
 		primitive.E{Key: "projectlist", Value: user.ProjectList},
 	}}}
-	collection := clientInstance.Database(DB).Collection(User)
+	collection := clientInstance.Database(General.DB).Collection(General.User)
 
 	//Perform UpdateOne operation & validate against the error.
 	_, err := collection.UpdateOne(context.TODO(), filter, updater)
@@ -109,34 +110,6 @@ func CheckDuplicateEmail(email string) bool {
 	return false
 }
 
-//get all user name
-//func GetAllUserName() []string {
-//	var Allusername []string
-//	//db, err := connectdatabase()
-//	// Query all users
-//	if db == nil {
-//
-//		log.Print("can not connect to database!")
-//		return nil
-//	}
-//	//defer db.Close()
-//
-//	rows, err := db.Query("select username from USERS")
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//	for rows.Next() {
-//		var username string
-//		err := rows.Scan(&username)
-//		if err != nil {
-//			log.Fatal(err)
-//		}
-//		Allusername = append(Allusername, username)
-//	}
-//	defer rows.Close()
-//	return Allusername
-//}
-//
 ////hash password by bycript
 func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 5)
@@ -173,7 +146,7 @@ func GetUsers(Id string) ([]Models.User, error) {
 		return list, err
 	}
 	//Create a handle to the respective collection in the database.
-	collection := client.Database(DB).Collection(User)
+	collection := client.Database(General.DB).Collection(General.User)
 	//Perform Find operation & validate against the error.
 	cur, findError := collection.Find(context.TODO(), filter)
 	if findError != nil {

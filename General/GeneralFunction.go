@@ -1,8 +1,9 @@
-package GeneralFunction
+package General
 
 import (
 	"crypto/tls"
 	"encoding/json"
+	"github.com/nu7hatch/gouuid"
 	gomail "gopkg.in/mail.v2"
 	"main.go/Models"
 	"regexp"
@@ -61,4 +62,9 @@ func ValidateEmail(e string) bool {
 	}
 	return emailRegex.MatchString(e)
 
+}
+
+func CreateUUID() string {
+	u, _ := uuid.NewV4()
+	return u.String()
 }

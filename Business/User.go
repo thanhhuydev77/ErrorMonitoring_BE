@@ -2,6 +2,7 @@ package Business
 
 import (
 	"main.go/Database"
+	"main.go/General"
 	"main.go/Models"
 )
 
@@ -12,7 +13,7 @@ func Login(username string, pass string) (bool, bool) {
 
 //
 ////register
-func Register(user Models.User) (bool, Database.ErrorCode) {
+func Register(user Models.User) (bool, General.ErrorCode) {
 	return Database.Register(user)
 }
 
