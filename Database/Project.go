@@ -28,6 +28,28 @@ func CreateProject(project Models.Project) (bool, General.ErrorCode) {
 	return true, General.NO_ERROR
 }
 
+func ChangeStatusProject(project Models.Project) bool {
+	if clientInstance == nil {
+		Err := "can not connect to database!"
+		log.Print(Err)
+		return false
+	}
+
+	filter := bson.D{primitive.E{Key: "id", Value: project.Id}}
+	updater := bson.D{primitive.E{Key: "$set", Value: bson.D{
+		primitive.E{Key: "active", Value: project.Active},
+	}}}
+	collection := clientInstance.Database(General.DB).Collection(General.Project)
+
+	//Perform UpdateOne operation & validate against the error.
+	_, err := collection.UpdateOne(context.TODO(), filter, updater)
+	if err != nil {
+		return false
+	}
+	//Return success without any error.
+	return true
+}
+
 ////get a user or all user(id = -1)
 func GetProjects(email string, Id string) ([]Models.Project, error) {
 

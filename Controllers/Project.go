@@ -36,6 +36,20 @@ func ProjectRequest(w http.ResponseWriter, r *http.Request) {
 		result := General.CreateResponse(1, `Create project successfully!`, Models.EmptyObject{})
 		io.WriteString(w, result)
 		return
+	case "set-status":
+		ChangeStatusOK := false
+		if len(projectRequest.Project.Id) > 0 {
+			ChangeStatusOK = Business.ChangeStatusProject(projectRequest.Project)
+		}
+		if !ChangeStatusOK {
+			result := General.CreateResponse(0, `Change status failed!`, Models.EmptyObject{})
+			io.WriteString(w, result)
+			return
+		}
+		result := General.CreateResponse(1, `Change status success!`, Models.EmptyObject{})
+		io.WriteString(w, result)
+
+		return
 	}
 
 }
@@ -50,16 +64,17 @@ func GetProject(w http.ResponseWriter, r *http.Request) {
 	log.Print("email :" + email)
 	List, err := Business.GetProjects(email, Id)
 	if err != nil {
-		result := General.CreateResponse(0, `Unauthentication!`, Models.EmptyObject{})
+
+		result := General.CreateResponse(0, `Get project failed!`, Models.EmptyObject{})
 		io.WriteString(w, result)
 		return
 	}
 	if len(Id) > 0 {
-		result := General.CreateResponse(1, `Authentication success!`, List[0])
+		result := General.CreateResponse(1, `Get project success!`, List[0])
 		io.WriteString(w, result)
 		return
 	}
-	result := General.CreateResponse(1, `Authentication success!`, List)
+	result := General.CreateResponse(1, `Get list project success!`, List)
 	io.WriteString(w, result)
 	return
 }
