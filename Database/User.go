@@ -78,17 +78,30 @@ func Update(user Models.User) bool {
 		return false
 	}
 	filter := bson.D{primitive.E{Key: "email", Value: user.Email}}
-	user.Password, _ = hashPassword(user.Password)
-	//Define updater for to specifiy change to be updated.
-	updater := bson.D{primitive.E{Key: "$set", Value: bson.D{
-		primitive.E{Key: "fullname", Value: user.FullName},
-		primitive.E{Key: "password", Value: user.Password},
-		primitive.E{Key: "avatar", Value: user.Avatar},
-		primitive.E{Key: "mainplatform", Value: user.MainPlatform},
-		primitive.E{Key: "position", Value: user.Position},
-		primitive.E{Key: "organization", Value: user.Organization},
-		primitive.E{Key: "projectlist", Value: user.ProjectList},
-	}}}
+	var updater bson.D
+	if len(user.Password) > 0 {
+		user.Password, _ = hashPassword(user.Password)
+		//Define updater for to specifiy change to be updated.
+		updater = bson.D{primitive.E{Key: "$set", Value: bson.D{
+			primitive.E{Key: "fullname", Value: user.FullName},
+			primitive.E{Key: "password", Value: user.Password},
+			primitive.E{Key: "avatar", Value: user.Avatar},
+			primitive.E{Key: "mainplatform", Value: user.MainPlatform},
+			primitive.E{Key: "position", Value: user.Position},
+			primitive.E{Key: "organization", Value: user.Organization},
+			primitive.E{Key: "projectlist", Value: user.ProjectList},
+		}}}
+	} else {
+		updater = bson.D{primitive.E{Key: "$set", Value: bson.D{
+			primitive.E{Key: "fullname", Value: user.FullName},
+			primitive.E{Key: "avatar", Value: user.Avatar},
+			primitive.E{Key: "mainplatform", Value: user.MainPlatform},
+			primitive.E{Key: "position", Value: user.Position},
+			primitive.E{Key: "organization", Value: user.Organization},
+			primitive.E{Key: "projectlist", Value: user.ProjectList},
+		}}}
+	}
+
 	collection := clientInstance.Database(General.DB).Collection(General.User)
 
 	//Perform UpdateOne operation & validate against the error.

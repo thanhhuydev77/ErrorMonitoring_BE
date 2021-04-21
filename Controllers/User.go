@@ -67,6 +67,9 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 	if user.Type == "update" {
 		token := r.URL.Query().Get("token")
 		user.User.Email = GetEmailFromToken(token)
+		if len(user.User.Password) > 50 {
+			user.User.Password = ""
+		}
 		isSuccessed := Business.Update(user.User)
 		if !isSuccessed {
 			result := General.CreateResponse(0, `Update user failed!`, Models.EmptyObject{})
