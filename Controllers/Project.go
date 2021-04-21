@@ -25,7 +25,6 @@ func ProjectRequest(w http.ResponseWriter, r *http.Request) {
 		RegisterOK := false
 		if len(projectRequest.Project.Name) > 0 {
 			RegisterOK, _ = Business.CreateProject(projectRequest.Project)
-
 		}
 		if !RegisterOK {
 			result := General.CreateResponse(0, `Create project failed!`, Models.EmptyObject{})
