@@ -49,6 +49,21 @@ func ProjectRequest(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, result)
 
 		return
+	case "add-member":
+		AddMemberOk := false
+		if len(projectRequest.Project.Id) > 0 {
+			AddMemberOk = Business.AddMember("", projectRequest.Project)
+		}
+		if !AddMemberOk {
+			result := General.CreateResponse(0, `Add member failed!`, Models.EmptyObject{})
+			io.WriteString(w, result)
+			return
+
+		}
+		result := General.CreateResponse(1, `Add member success!`, Models.EmptyObject{})
+		io.WriteString(w, result)
+
+		return
 	}
 
 }

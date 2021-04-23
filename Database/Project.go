@@ -62,11 +62,20 @@ func GetProjects(email string, Id string) ([]Models.Project, error) {
 	//defer db.Close()
 	list := []Models.Project{}
 	var filter bson.D
-	if Id == "" {
-		filter = bson.D{primitive.E{Key: "createuser", Value: email}} //bson.D{{}} specifies 'all documents'
+	if len(email) > 0 {
+		if Id == "" {
+			filter = bson.D{primitive.E{Key: "createuser", Value: email}} //bson.D{{}} specifies 'all documents'
+		} else {
+			filter = bson.D{primitive.E{Key: "createuser", Value: email}, primitive.E{Key: "id", Value: Id}}
+		}
 	} else {
-		filter = bson.D{primitive.E{Key: "createuser", Value: email}, primitive.E{Key: "id", Value: Id}}
+		if Id == "" {
+			filter = bson.D{} //bson.D{{}} specifies 'all documents'
+		} else {
+			filter = bson.D{primitive.E{Key: "id", Value: Id}}
+		}
 	}
+
 	client, err := GetMongoClient()
 	if err != nil {
 		return list, err
@@ -93,4 +102,28 @@ func GetProjects(email string, Id string) ([]Models.Project, error) {
 		return list, mongo.ErrNoDocuments
 	}
 	return list, nil
+}
+
+func UpdateUserList(project Models.Project) bool {
+	if clientInstance == nil {
+		Err := "can not connect to database!"
+		log.Print(Err)
+		return false
+	}
+
+	filter := bson.D{primitive.E{Key: "id", Value: project.Id}}
+	var updater bson.D
+	//Define updater for to specifiy change to be updated.
+	updater = bson.D{primitive.E{Key: "$set", Value: bson.D{
+		primitive.E{Key: "userlist", Value: project.UserList},
+	}}}
+	collection := clientInstance.Database(General.DB).Collection(General.Project)
+
+	//Perform UpdateOne operation & validate against the error.
+	_, err := collection.UpdateOne(context.TODO(), filter, updater)
+	if err != nil {
+		return false
+	}
+	//Return success without any error.
+	return true
 }
