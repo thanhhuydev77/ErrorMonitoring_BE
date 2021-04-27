@@ -21,6 +21,17 @@ func AddMember(email string, project Models.Project) bool {
 	if len(Project) > 0 {
 		for _, userlist := range project.UserList {
 			Project[0].UserList = append(Project[0].UserList, userlist)
+
+			//update project-role of user
+			CurrentUser, Err := Database.GetUsers(userlist.Email)
+			if Err != nil {
+				return false
+			}
+			CurrentUser[0].ProjectList = append(CurrentUser[0].ProjectList, Models.ProjectList{
+				ProjectId: Project[0].Id,
+				Role:      userlist.Role,
+			})
+			Database.UpdateProjectList(CurrentUser[0])
 		}
 		return Database.UpdateUserList(Project[0])
 	}
