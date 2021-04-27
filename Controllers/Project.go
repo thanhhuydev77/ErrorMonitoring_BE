@@ -64,6 +64,36 @@ func ProjectRequest(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, result)
 
 		return
+	case "modify-member":
+		ModifyMemberOk := false
+		if len(projectRequest.Project.Id) > 0 {
+			ModifyMemberOk = Business.ModifyMember("", projectRequest.Project)
+		}
+		if !ModifyMemberOk {
+			result := General.CreateResponse(0, `Mofidy member failed!`, Models.EmptyObject{})
+			io.WriteString(w, result)
+			return
+
+		}
+		result := General.CreateResponse(1, `Mofidy member success!`, Models.EmptyObject{})
+		io.WriteString(w, result)
+
+		return
+	case "remove-member":
+		RemoveMemberOk := false
+		if len(projectRequest.Project.Id) > 0 {
+			RemoveMemberOk = Business.RemoveMember("", projectRequest.Project)
+		}
+		if !RemoveMemberOk {
+			result := General.CreateResponse(0, `Remove member failed!`, Models.EmptyObject{})
+			io.WriteString(w, result)
+			return
+
+		}
+		result := General.CreateResponse(1, `Remove member success!`, Models.EmptyObject{})
+		io.WriteString(w, result)
+
+		return
 	}
 
 }

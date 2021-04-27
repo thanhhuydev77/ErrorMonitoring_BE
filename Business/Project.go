@@ -26,3 +26,30 @@ func AddMember(email string, project Models.Project) bool {
 	}
 	return false
 }
+func ModifyMember(email string, project Models.Project) bool {
+	Project, _ := GetProjects("", project.Id)
+	if len(Project) > 0 {
+		for i, userlist := range Project[0].UserList {
+			if userlist.Email == project.UserList[0].Email {
+				Project[0].UserList[i].Role = project.UserList[0].Role
+				return Database.UpdateUserList(Project[0])
+			}
+		}
+		//return Database.UpdateUserList(Project[0])
+	}
+	return false
+}
+func RemoveMember(email string, project Models.Project) bool {
+	Project, _ := GetProjects("", project.Id)
+	if len(Project) > 0 {
+		for i, userlist := range Project[0].UserList {
+			if userlist.Email == project.UserList[0].Email {
+				Project[0].UserList[i] = Project[0].UserList[len(Project[0].UserList)-1]
+				Project[0].UserList = Project[0].UserList[:len(Project[0].UserList)-1]
+				return Database.UpdateUserList(Project[0])
+			}
+		}
+		//return Database.UpdateUserList(Project[0])
+	}
+	return false
+}
