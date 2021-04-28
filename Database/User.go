@@ -181,3 +181,28 @@ func GetUsers(Id string) ([]Models.User, error) {
 	}
 	return list, nil
 }
+
+//update Project List
+func UpdateProjectList(user Models.User) bool {
+	if clientInstance == nil {
+		Err := "can not connect to database!"
+		log.Print(Err)
+		return false
+	}
+
+	filter := bson.D{primitive.E{Key: "email", Value: user.Email}}
+	var updater bson.D
+	//Define updater for to specifiy change to be updated.
+	updater = bson.D{primitive.E{Key: "$set", Value: bson.D{
+		primitive.E{Key: "projectlist", Value: user.ProjectList},
+	}}}
+	collection := clientInstance.Database(General.DB).Collection(General.User)
+
+	//Perform UpdateOne operation & validate against the error.
+	_, err := collection.UpdateOne(context.TODO(), filter, updater)
+	if err != nil {
+		return false
+	}
+	//Return success without any error.
+	return true
+}
