@@ -37,30 +37,53 @@ func AddMember(email string, project Models.Project) bool {
 	}
 	return false
 }
-func ModifyMember(email string, project Models.Project) bool {
-	Project, _ := GetProjects("", project.Id)
-	if len(Project) > 0 {
-		for i, userlist := range Project[0].UserList {
-			if userlist.Email == project.UserList[0].Email {
-				Project[0].UserList[i].Role = project.UserList[0].Role
-				return Database.UpdateUserList(Project[0])
+func ModifyMember(email string, ParamProject Models.Project) bool {
+	CurrentProject, _ := GetProjects("", ParamProject.Id)
+	if len(CurrentProject) > 0 {
+		for i := range CurrentProject[0].UserList {
+			for _, paramUserList := range ParamProject.UserList {
+				if paramUserList.Email == CurrentProject[0].UserList[i].Email {
+					CurrentProject[0].UserList[i].Role = paramUserList.Role
+
+					//update project-role of user
+					CurrentUser, Err := Database.GetUsers(CurrentProject[0].UserList[i].Email)
+					if Err != nil {
+						return false
+					}
+					CurrentUser[0].ProjectList = Models.ModifyProjectRole(CurrentUser[0].ProjectList, Models.ProjectList{
+						ProjectId: CurrentProject[0].Id,
+						Role:      CurrentProject[0].UserList[i].Role,
+					})
+					Database.UpdateProjectList(CurrentUser[0])
+				}
 			}
+
 		}
-		//return Database.UpdateUserList(Project[0])
+		return Database.UpdateUserList(CurrentProject[0])
 	}
 	return false
 }
-func RemoveMember(email string, project Models.Project) bool {
-	Project, _ := GetProjects("", project.Id)
-	if len(Project) > 0 {
-		for i, userlist := range Project[0].UserList {
-			if userlist.Email == project.UserList[0].Email {
-				Project[0].UserList[i] = Project[0].UserList[len(Project[0].UserList)-1]
-				Project[0].UserList = Project[0].UserList[:len(Project[0].UserList)-1]
-				return Database.UpdateUserList(Project[0])
+func RemoveMember(email string, ParamProject Models.Project) bool {
+	CurrentProject, _ := GetProjects("", ParamProject.Id)
+	if len(CurrentProject) > 0 {
+		for _, userlist := range ParamProject.UserList {
+			if Models.Contain(CurrentProject[0].UserList, userlist) {
+				CurrentProject[0].UserList = Models.RemoveUserRole(CurrentProject[0].UserList, userlist)
 			}
+
+			//update project-role of user
+			CurrentUser, Err := Database.GetUsers(userlist.Email)
+			if Err != nil {
+				return false
+			}
+			CurrentUser[0].ProjectList = Models.RemoveProjectRole(CurrentUser[0].ProjectList, Models.ProjectList{ProjectId: ParamProject.Id})
+			Database.UpdateProjectList(CurrentUser[0])
+			//if userlist.Email == project.UserList[0].Email {
+			//	userlist = CurrentProject[0].UserList[len(CurrentProject[0].UserList)-1]
+			//	CurrentProject[0].UserList = CurrentProject[0].UserList[:len(CurrentProject[0].UserList)-1]
+			//return Database.UpdateUserList(Project[0])
 		}
-		//return Database.UpdateUserList(Project[0])
+		return Database.UpdateUserList(CurrentProject[0])
 	}
 	return false
 }
