@@ -66,7 +66,7 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 	}
 	if user.Type == "update" {
 		token := r.URL.Query().Get("token")
-		user.User.Email = GetEmailFromToken(token)
+		user.User.Email = General.GetEmailFromToken(token)
 		if len(user.User.Password) > 50 {
 			user.User.Password = ""
 		}
@@ -122,7 +122,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	//Id := vars["Id"]
 
 	token := r.URL.Query().Get("token")
-	email := GetEmailFromToken(token)
+	email := General.GetEmailFromToken(token)
 	log.Print("email :" + email)
 	List, err := Business.GetUsers(email)
 	if err != nil {

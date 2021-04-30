@@ -7,7 +7,29 @@ import (
 )
 
 func CreateProject(project Models.Project) (bool, General.ErrorCode) {
-	return Database.CreateProject(project)
+	project.Id = General.CreateUUID()
+	project.UserList = append(project.UserList, Models.UserRole{
+		Email: project.CreateUser,
+		Role:  "admin",
+	})
+	result, ErrCode := Database.CreateProject(project)
+	if result {
+		//create project success --> add projectlist of member
+		//update project-role of user
+		for _, userlist := range project.UserList {
+			CurrentUser, Err := Database.GetUsers(userlist.Email)
+			if Err != nil {
+				return result, ErrCode
+			}
+			CurrentUser[0].ProjectList = append(CurrentUser[0].ProjectList, Models.ProjectList{
+				ProjectId: project.Id,
+				Role:      userlist.Role,
+			})
+			Database.UpdateProjectList(CurrentUser[0])
+		}
+	}
+
+	return result, ErrCode
 }
 func ChangeStatusProject(project Models.Project) bool {
 	return Database.ChangeStatusProject(project)
