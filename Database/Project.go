@@ -51,7 +51,7 @@ func ChangeStatusProject(project Models.Project) bool {
 }
 
 ////get a user or all user(id = -1)
-func GetProjects(email string, Id string) ([]Models.Project, error) {
+func GetProject(Id string) ([]Models.Project, error) {
 
 	//db, err := connectdatabase()
 	//// Query all users
@@ -62,18 +62,11 @@ func GetProjects(email string, Id string) ([]Models.Project, error) {
 	//defer db.Close()
 	list := []Models.Project{}
 	var filter bson.D
-	if len(email) > 0 {
-		if Id == "" {
-			filter = bson.D{primitive.E{Key: "createuser", Value: email}} //bson.D{{}} specifies 'all documents'
-		} else {
-			filter = bson.D{primitive.E{Key: "createuser", Value: email}, primitive.E{Key: "id", Value: Id}}
-		}
+
+	if Id == "" {
+		filter = bson.D{} //bson.D{{}} specifies 'all documents'
 	} else {
-		if Id == "" {
-			filter = bson.D{} //bson.D{{}} specifies 'all documents'
-		} else {
-			filter = bson.D{primitive.E{Key: "id", Value: Id}}
-		}
+		filter = bson.D{primitive.E{Key: "id", Value: Id}}
 	}
 
 	client, err := GetMongoClient()

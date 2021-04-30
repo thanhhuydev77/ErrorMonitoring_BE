@@ -8,6 +8,7 @@ import (
 
 func CreateProject(project Models.Project) (bool, General.ErrorCode) {
 	project.Id = General.CreateUUID()
+
 	project.UserList = append(project.UserList, Models.UserRole{
 		Email: project.CreateUser,
 		Role:  "admin",
@@ -36,7 +37,19 @@ func ChangeStatusProject(project Models.Project) bool {
 }
 
 func GetProjects(email string, Id string) ([]Models.Project, error) {
-	return Database.GetProjects(email, Id)
+	if Id == "" && len(email) > 0 {
+		user, err := Database.GetUsers(email)
+		if err == nil && len(user) > 0 {
+			listProject := user[0].ProjectList
+			var listProjectResult []Models.Project
+			for _, projectRole := range listProject {
+				project, _ := Database.GetProject(projectRole.ProjectId)
+				listProjectResult = append(listProjectResult, project[0])
+			}
+			return listProjectResult, nil
+		}
+	}
+	return Database.GetProject(Id)
 }
 func AddMember(email string, project Models.Project) bool {
 	Project, _ := GetProjects("", project.Id)
