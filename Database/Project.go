@@ -5,6 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"main.go/General"
 	"main.go/Models"
@@ -76,7 +77,7 @@ func GetProject(Id string) ([]Models.Project, error) {
 	//Create a handle to the respective collection in the database.
 	collection := client.Database(General.DB).Collection(General.Project)
 	//Perform Find operation & validate against the error.
-	cur, findError := collection.Find(context.TODO(), filter)
+	cur, findError := collection.Find(context.TODO(), filter, options.Find().SetProjection(bson.M{"issues": 0}))
 	if findError != nil {
 		return list, findError
 	}
