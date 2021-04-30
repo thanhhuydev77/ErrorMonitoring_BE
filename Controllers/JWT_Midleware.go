@@ -48,28 +48,3 @@ func GenerateToken(email string) string {
 
 	return tokenString
 }
-func GetEmailFromToken(tokenString string) string {
-
-	type MyCustomClaims struct {
-		User string `json:"user"`
-		jwt.StandardClaims
-	}
-	var email string
-	// sample token is expired.  override time so it parses as valid
-	at(time.Unix(0, 0), func() {
-		token, _ := jwt.ParseWithClaims(tokenString, &MyCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-			return []byte("AllYourBase"), nil
-		})
-		claims, _ := token.Claims.(*MyCustomClaims)
-		email = claims.User
-
-	})
-	return email
-}
-func at(t time.Time, f func()) {
-	jwt.TimeFunc = func() time.Time {
-		return t
-	}
-	f()
-	jwt.TimeFunc = time.Now
-}

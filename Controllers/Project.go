@@ -26,6 +26,7 @@ func ProjectRequest(w http.ResponseWriter, r *http.Request) {
 		if len(projectRequest.Project.Name) > 0 {
 			RegisterOK, _ = Business.CreateProject(projectRequest.Project)
 		}
+
 		if !RegisterOK {
 			result := General.CreateResponse(0, `Create project failed!`, Models.EmptyObject{})
 			io.WriteString(w, result)
@@ -104,7 +105,7 @@ func GetProject(w http.ResponseWriter, r *http.Request) {
 	Id := vars["Id"]
 
 	token := r.URL.Query().Get("token")
-	email := GetEmailFromToken(token)
+	email := General.GetEmailFromToken(token)
 	log.Print("email :" + email)
 	List, err := Business.GetProjects(email, Id)
 	if err != nil {

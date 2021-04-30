@@ -17,7 +17,7 @@ func CreateProject(project Models.Project) (bool, General.ErrorCode) {
 		log.Print(Err)
 		return false, General.DATABASE_ERROR
 	}
-	project.Id = General.CreateUUID()
+
 	collection := clientInstance.Database(General.DB).Collection(General.Project)
 	//Perform InsertOne operation & validate against the error.
 	_, err := collection.InsertOne(context.TODO(), project)
