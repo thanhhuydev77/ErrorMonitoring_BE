@@ -1,6 +1,7 @@
 package Controllers
 
 import (
+	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -14,7 +15,29 @@ func NewRouter() *mux.Router {
 	return router
 }
 
+func Search(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+	query := r.URL.Query()
+	filter := query.Get("filter")
+	if len(filter) == 0 {
+		fmt.Println("filters not present")
+	}
+	filterType := query.Get("type")
+
+	switch filterType {
+	case "project":
+		SearchInProject(w, r)
+		return
+	case "user":
+		SearchInUser(w, r)
+		return
+	}
+}
+
 func InitAllController(r *mux.Router) {
+	//General Controller
+	r.Handle("/search", AuthMW(http.HandlerFunc(Search))).Methods("PUT")
+
 	//Users Controller
 	r.HandleFunc("/user", UserRequest).Methods("POST")
 	r.Handle("/user", AuthMW(http.HandlerFunc(UserRequest))).Methods("PUT")
