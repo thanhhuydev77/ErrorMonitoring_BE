@@ -130,6 +130,7 @@ func GetUserByProjectId(w http.ResponseWriter, r *http.Request) {
 	if Err != nil || len(ListUser) == 0 {
 		result := General.CreateResponse(0, `Get users by Project Id failed!`, Models.EmptyObject{})
 		io.WriteString(w, result)
+		return
 	}
 	result := General.CreateResponse(1, `Get users by Project Id success!`, ListUser)
 	io.WriteString(w, result)
