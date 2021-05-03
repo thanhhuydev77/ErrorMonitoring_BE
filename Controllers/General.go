@@ -3,6 +3,9 @@ package Controllers
 import (
 	"fmt"
 	"github.com/gorilla/mux"
+	"io"
+	"main.go/General"
+	"main.go/Models"
 	"net/http"
 )
 
@@ -30,6 +33,10 @@ func Search(w http.ResponseWriter, r *http.Request) {
 		return
 	case "user":
 		SearchInUser(w, r)
+		return
+	default:
+		result := General.CreateResponse(0, `invalid type!`, Models.EmptyObject{})
+		io.WriteString(w, result)
 		return
 	}
 }
