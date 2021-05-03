@@ -2,6 +2,7 @@ package Controllers
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
 	_ "github.com/gorilla/mux"
 	"io"
 	"log"
@@ -17,11 +18,14 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	user := Models.UserRequest{}
 	err1 := json.NewDecoder(r.Body).Decode(&user)
+
 	if err1 != nil {
 		result := General.CreateResponse(0, `wrong format, please try again!`, Models.EmptyObject{})
+		log.Print(err1.Error())
 		io.WriteString(w, result)
 		return
 	}
+
 	if user.Type == "login" {
 
 		IsExist, passOk := Business.Login(user.User.Email, user.User.Password)
@@ -114,9 +118,25 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, result)
 		return
 	}
+
+	return
 }
 
-func GetUser(w http.ResponseWriter, r *http.Request) {
+func GetUserByProjectId(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+	vars := mux.Vars(r)
+	ProjectId := vars["Id"]
+	ListUser, Err := Business.GetUsersByProjectId(ProjectId)
+	if Err != nil || len(ListUser) == 0 {
+		result := General.CreateResponse(0, `Get users by Project Id failed!`, Models.EmptyObject{})
+		io.WriteString(w, result)
+	}
+	result := General.CreateResponse(1, `Get users by Project Id success!`, ListUser)
+	io.WriteString(w, result)
+	return
+
+}
+func authenUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	//vars := mux.Vars(r)
 	//Id := vars["Id"]

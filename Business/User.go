@@ -1,6 +1,7 @@
 package Business
 
 import (
+	"errors"
 	"main.go/Database"
 	"main.go/General"
 	"main.go/Models"
@@ -34,4 +35,21 @@ func CheckUserExsist(email string) bool {
 		return false
 	}
 	return true
+}
+func GetUsersByProjectId(ProjectId string) ([]Models.User, error) {
+	ProjectList, Err := GetProjects("", ProjectId)
+	var CurProject Models.Project
+	if Err != nil || len(ProjectList) == 0 {
+		return nil, errors.New("Project Id is not valid!")
+	}
+	CurProject = ProjectList[0]
+	var listUser []Models.User
+	for _, user := range CurProject.UserList {
+		foundUser, Err := Database.GetUsers(user.Email)
+		if Err != nil || len(foundUser) == 0 {
+			return nil, errors.New("User Id is not valid!")
+		}
+		listUser = append(listUser, foundUser[0])
+	}
+	return listUser, nil
 }
