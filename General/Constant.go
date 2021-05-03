@@ -3,6 +3,7 @@ package General
 const (
 	DB                        = "EMDB"
 	User                      = "user"
+	MAILSMTP                  = "smtp.gmail.com"
 	Project                   = "project"
 	EMAILSUBJECT              = "[EM] Password Reset Request"
 	EMAILTEXT                 = "Hi Sir/Madam,\nWe have received a request to change your password.\nPlease verify using the following code : "
