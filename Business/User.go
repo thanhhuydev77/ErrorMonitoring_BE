@@ -53,3 +53,7 @@ func GetUsersByProjectId(ProjectId string) ([]Models.User, error) {
 	}
 	return listUser, nil
 }
+
+func SearchUser(filter string) ([]Models.User, error) {
+	return Database.SearchUser(filter)
+}

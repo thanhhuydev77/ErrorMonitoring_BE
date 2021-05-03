@@ -2,6 +2,7 @@ package Controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	_ "github.com/gorilla/mux"
 	"io"
@@ -152,6 +153,26 @@ func authenUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	result := General.CreateResponse(1, `Authentication success!`, List[0])
+	io.WriteString(w, result)
+	return
+}
+
+func SearchInUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+	query := r.URL.Query()
+	filter := query.Get("filter")
+	if len(filter) == 0 {
+		fmt.Println("filters not present")
+	}
+
+	List, err := Business.SearchUser(filter)
+	if err != nil || len(List) == 0 {
+		result := General.CreateResponse(0, `Search users failed!`, Models.EmptyObject{})
+		io.WriteString(w, result)
+		return
+	}
+
+	result := General.CreateResponse(1, `Search users success!`, List)
 	io.WriteString(w, result)
 	return
 }

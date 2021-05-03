@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	_ "log"
@@ -205,4 +206,49 @@ func UpdateProjectList(user Models.User) bool {
 	}
 	//Return success without any error.
 	return true
+}
+
+func SearchUser(filter string) ([]Models.User, error) {
+
+	if clientInstance == nil {
+		log.Print("can not connect to database!")
+		return nil, nil
+	}
+	//defer db.Close()
+	var list []Models.User
+
+	query := bson.M{
+		"$text": bson.M{
+			"$search": filter,
+		},
+	}
+
+	client, err := GetMongoClient()
+	if err != nil {
+		return list, err
+	}
+
+	//Create a handle to the respective collection in the database.
+	collection := client.Database(General.DB).Collection(General.User)
+
+	//Perform Find operation & validate against the error.
+	cur, findError := collection.Find(context.TODO(), query, options.Find())
+	if findError != nil {
+		return list, findError
+	}
+	//Map result to slice
+	for cur.Next(context.TODO()) {
+		var t Models.User
+		err := cur.Decode(&t)
+		if err != nil {
+			return list, err
+		}
+		list = append(list, t)
+	}
+	// once exhausted, close the cursor
+	cur.Close(context.TODO())
+	if len(list) == 0 {
+		return list, mongo.ErrNoDocuments
+	}
+	return list, nil
 }

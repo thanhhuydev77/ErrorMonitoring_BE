@@ -20,7 +20,7 @@ func InitAllController(r *mux.Router) {
 	r.Handle("/user", AuthMW(http.HandlerFunc(UserRequest))).Methods("PUT")
 	r.Handle("/user", AuthMW(http.HandlerFunc(authenUser))).Methods("GET")
 	r.Handle("/user/{Id}", AuthMW(http.HandlerFunc(GetUserByProjectId))).Methods("GET")
-
+	r.Handle("/user/search", AuthMW(http.HandlerFunc(SearchInUser))).Methods("PUT")
 	//Projects Controller
 	r.Handle("/project", AuthMW(http.HandlerFunc(ProjectRequest))).Methods("POST")
 	r.Handle("/project", AuthMW(http.HandlerFunc(GetProject))).Methods("GET")
