@@ -2,6 +2,7 @@ package Controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"io"
 	"log"
@@ -120,6 +121,26 @@ func GetProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	result := General.CreateResponse(1, `Get list project success!`, List)
+	io.WriteString(w, result)
+	return
+}
+
+func SearchInProject(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+	query := r.URL.Query()
+	filter := query.Get("filter")
+	if len(filter) == 0 {
+		fmt.Println("filters not present")
+	}
+
+	List, err := Business.SearchProject(filter)
+	if err != nil || len(List) == 0 {
+		result := General.CreateResponse(0, `Search projects failed!`, Models.EmptyObject{})
+		io.WriteString(w, result)
+		return
+	}
+
+	result := General.CreateResponse(1, `Search projects success!`, List)
 	io.WriteString(w, result)
 	return
 }

@@ -11,7 +11,7 @@ func CreateProject(project Models.Project) (bool, General.ErrorCode) {
 
 	project.UserList = append(project.UserList, Models.UserRole{
 		Email: project.CreateUser,
-		Role:  "admin",
+		Role:  "owner",
 	})
 	result, ErrCode := Database.CreateProject(project)
 	if result {
@@ -36,6 +36,9 @@ func ChangeStatusProject(project Models.Project) bool {
 	return Database.ChangeStatusProject(project)
 }
 
+func SearchProject(filter string) ([]Models.Project, error) {
+	return Database.SearchProject(filter)
+}
 func GetProjects(email string, Id string) ([]Models.Project, error) {
 	if Id == "" && len(email) > 0 {
 		user, err := Database.GetUsers(email)

@@ -121,3 +121,48 @@ func UpdateUserList(project Models.Project) bool {
 	//Return success without any error.
 	return true
 }
+
+func SearchProject(filter string) ([]Models.Project, error) {
+
+	if clientInstance == nil {
+		log.Print("can not connect to database!")
+		return nil, nil
+	}
+	//defer db.Close()
+	list := []Models.Project{}
+
+	query := bson.M{
+		"$text": bson.M{
+			"$search": filter,
+		},
+	}
+
+	client, err := GetMongoClient()
+	if err != nil {
+		return list, err
+	}
+
+	//Create a handle to the respective collection in the database.
+	collection := client.Database(General.DB).Collection(General.Project)
+
+	//Perform Find operation & validate against the error.
+	cur, findError := collection.Find(context.TODO(), query, options.Find().SetProjection(bson.M{"issues": 0}))
+	if findError != nil {
+		return list, findError
+	}
+	//Map result to slice
+	for cur.Next(context.TODO()) {
+		var t Models.Project
+		err := cur.Decode(&t)
+		if err != nil {
+			return list, err
+		}
+		list = append(list, t)
+	}
+	// once exhausted, close the cursor
+	cur.Close(context.TODO())
+	if len(list) == 0 {
+		return list, mongo.ErrNoDocuments
+	}
+	return list, nil
+}

@@ -26,5 +26,6 @@ func InitAllController(r *mux.Router) {
 	r.Handle("/project", AuthMW(http.HandlerFunc(GetProject))).Methods("GET")
 	r.Handle("/project/{Id}", AuthMW(http.HandlerFunc(GetProject))).Methods("GET")
 	r.Handle("/project", AuthMW(http.HandlerFunc(ProjectRequest))).Methods("PUT")
+	r.Handle("/project/search", AuthMW(http.HandlerFunc(SearchInProject))).Methods("PUT")
 
 }
