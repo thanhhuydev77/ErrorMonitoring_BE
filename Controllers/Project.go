@@ -110,8 +110,7 @@ func GetProject(w http.ResponseWriter, r *http.Request) {
 	log.Print("email :" + email)
 	List, err := Business.GetProjects(email, Id)
 	if err != nil {
-
-		result := General.CreateResponse(0, `Get project failed!`, Models.EmptyObject{})
+		result := General.CreateResponse(0, `Get project(s) failed!`, Models.EmptyObject{})
 		io.WriteString(w, result)
 		return
 	}

@@ -1,6 +1,7 @@
 package Business
 
 import (
+	"errors"
 	"main.go/Database"
 	"main.go/General"
 	"main.go/Models"
@@ -51,6 +52,7 @@ func GetProjects(email string, Id string) ([]Models.Project, error) {
 			}
 			return listProjectResult, nil
 		}
+		return nil, errors.New("invalid user")
 	}
 	return Database.GetProject(Id)
 }
