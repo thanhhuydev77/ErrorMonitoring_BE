@@ -13,6 +13,8 @@ type Issue struct {
 	Environment string    `json:"environment"`
 	CheckCode   string    `json:"checkCode"`
 	Frame       string    `json:"frame"`
+	Lineno      string    `json:"lineno"`
+	Colno       string    `json:"colno"`
 	Status      string    `json:"status"`
 	Assignee    string    `json:"assignee"`
 	Path        string    `json:"path"`
