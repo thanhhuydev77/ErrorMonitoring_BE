@@ -11,7 +11,7 @@ const (
 	NO_ERROR        ErrorCode = 0
 	DUPLICATE_EMAIL ErrorCode = 1
 	UNKNOWN_ERROR   ErrorCode = 2
-	TIMEFORMAT                = "0001-01-01 00:00:00 +0000"
+	TIMEFORMAT                = "2012-11-01T22:08:41+00:00"
 	Admin           Role      = 0
 	Editor          Role      = 1
 	Viewer          Role      = 2

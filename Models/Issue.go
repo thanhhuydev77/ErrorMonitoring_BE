@@ -67,7 +67,7 @@ func FilterIssue(listIssue []Issue, field string, value string) []Issue {
 		}
 		break
 	case "FromDate":
-		a, err := time.Parse(CONST.TIMEFORMAT, value)
+		a, err := time.Parse(time.RFC3339, value)
 		if err == nil {
 			for _, issue := range listIssue {
 				if issue.CreateTime.After(a) {
@@ -77,7 +77,7 @@ func FilterIssue(listIssue []Issue, field string, value string) []Issue {
 		}
 		break
 	case "ToDate":
-		a, err := time.Parse(CONST.TIMEFORMAT, value)
+		a, err := time.Parse(time.RFC3339, value)
 		if err == nil {
 			for _, issue := range listIssue {
 				if issue.CreateTime.Before(a) {

@@ -2,7 +2,6 @@ package Business
 
 import (
 	"github.com/pkg/errors"
-	"main.go/CONST"
 	"main.go/Database"
 	"main.go/General"
 	"main.go/Models"
@@ -42,10 +41,10 @@ func FilterIssue(filter Models.IssueFilter) ([]Models.Issue, error) {
 	}
 	defaultTime := time.Time{}
 	if filter.FromDate != defaultTime {
-		listIssue = Models.FilterIssue(listIssue, "FromDate", filter.FromDate.Format(CONST.TIMEFORMAT))
+		listIssue = Models.FilterIssue(listIssue, "FromDate", filter.FromDate.Format(time.RFC3339))
 	}
 	if filter.ToDate != defaultTime {
-		listIssue = Models.FilterIssue(listIssue, "ToDate", filter.ToDate.Format(CONST.TIMEFORMAT))
+		listIssue = Models.FilterIssue(listIssue, "ToDate", filter.ToDate.Format(time.RFC3339))
 	}
 
 	return listIssue, nil
