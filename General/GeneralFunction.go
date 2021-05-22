@@ -7,6 +7,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/nu7hatch/gouuid"
 	gomail "gopkg.in/mail.v2"
+	"main.go/CONST"
 	"main.go/Models"
 	"regexp"
 	"time"
@@ -96,7 +97,7 @@ func at(t time.Time, f func()) {
 	jwt.TimeFunc = time.Now
 }
 func CheckMailExistence(mail string) bool {
-	err := checkmail.ValidateHostAndUser(MAILSMTP, "", mail)
+	err := checkmail.ValidateHostAndUser(CONST.MAILSMTP, "", mail)
 	if _, ok := err.(checkmail.SmtpError); ok && err != nil {
 		return false
 	}

@@ -2,12 +2,13 @@ package Business
 
 import (
 	"errors"
+	"main.go/CONST"
 	"main.go/Database"
 	"main.go/General"
 	"main.go/Models"
 )
 
-func CreateProject(project Models.Project) (bool, General.ErrorCode) {
+func CreateProject(project Models.Project) (bool, CONST.ErrorCode) {
 	project.Id = General.CreateUUID()
 
 	project.UserList = append(project.UserList, Models.UserRole{

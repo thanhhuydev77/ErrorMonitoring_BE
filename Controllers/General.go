@@ -41,21 +41,41 @@ func Search(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func Filter(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+	query := r.URL.Query()
+	filterType := query.Get("type")
+
+	switch filterType {
+	case "issue":
+		FilterInIssue(w, r)
+		return
+	default:
+		result := General.CreateResponse(0, `invalid type!`, Models.EmptyObject{})
+		io.WriteString(w, result)
+		return
+	}
+}
+
 func InitAllController(r *mux.Router) {
 	//General Controller
 	r.Handle("/search", AuthMW(http.HandlerFunc(Search))).Methods("PUT")
+	r.Handle("/filter", AuthMW(http.HandlerFunc(Filter))).Methods("PUT")
 
-	//Users Controller
+	//User Controllers
 	r.HandleFunc("/user", UserRequest).Methods("POST")
 	r.Handle("/user", AuthMW(http.HandlerFunc(UserRequest))).Methods("PUT")
 	r.Handle("/user", AuthMW(http.HandlerFunc(authenUser))).Methods("GET")
 	r.Handle("/user/{Id}", AuthMW(http.HandlerFunc(GetUserByProjectId))).Methods("GET")
 	r.Handle("/user/search", AuthMW(http.HandlerFunc(SearchInUser))).Methods("PUT")
-	//Projects Controller
+	//Project Controllers
 	r.Handle("/project", AuthMW(http.HandlerFunc(ProjectRequest))).Methods("POST")
 	r.Handle("/project", AuthMW(http.HandlerFunc(GetProject))).Methods("GET")
 	r.Handle("/project/{Id}", AuthMW(http.HandlerFunc(GetProject))).Methods("GET")
 	r.Handle("/project", AuthMW(http.HandlerFunc(ProjectRequest))).Methods("PUT")
 	r.Handle("/project/search", AuthMW(http.HandlerFunc(SearchInProject))).Methods("PUT")
+
+	//Issue Controllers
+	r.HandleFunc("/issue/{projectId}", CreateIssue).Methods("POST")
 
 }

@@ -2,8 +2,8 @@ package Business
 
 import (
 	"errors"
+	"main.go/CONST"
 	"main.go/Database"
-	"main.go/General"
 	"main.go/Models"
 )
 
@@ -14,7 +14,7 @@ func Login(username string, pass string) (bool, bool) {
 
 //
 ////register
-func Register(user Models.User) (bool, General.ErrorCode) {
+func Register(user Models.User) (bool, CONST.ErrorCode) {
 	return Database.Register(user)
 }
 

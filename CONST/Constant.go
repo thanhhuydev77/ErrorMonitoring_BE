@@ -1,4 +1,4 @@
-package General
+package CONST
 
 const (
 	DB                        = "EMDB"
@@ -11,10 +11,10 @@ const (
 	NO_ERROR        ErrorCode = 0
 	DUPLICATE_EMAIL ErrorCode = 1
 	UNKNOWN_ERROR   ErrorCode = 2
-
-	Admin  Role = 0
-	Editor Role = 1
-	Viewer Role = 2
+	TIMEFORMAT                = "0001-01-01 00:00:00 +0000"
+	Admin           Role      = 0
+	Editor          Role      = 1
+	Viewer          Role      = 2
 
 	Development Env = 0
 	Staging     Env = 1

@@ -10,6 +10,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/mitchellh/gox v1.0.1 // indirect
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
+	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.7.0
 	go.mongodb.org/mongo-driver v1.5.1
 	golang.org/x/crypto v0.0.0-20200302210943-78000ba7a073

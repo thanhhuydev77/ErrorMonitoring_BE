@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"main.go/Business"
+	"main.go/CONST"
 	"main.go/General"
 	"main.go/Models"
 	"math/rand"
@@ -51,7 +52,7 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if user.Type == "register" {
-		errCode := General.UNKNOWN_ERROR
+		errCode := CONST.UNKNOWN_ERROR
 		if General.ValidateEmail(user.User.Email) {
 			_, errCode = Business.Register(user.User)
 		}
@@ -98,7 +99,7 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 		//token
 		token := GenerateToken(user.User.Email)
 		//mail
-		SentOK := General.SendMail(user.User.Email, General.EMAILSUBJECT, General.EMAILTEXT+strconv.Itoa(randCode))
+		SentOK := General.SendMail(user.User.Email, CONST.EMAILSUBJECT, CONST.EMAILTEXT+strconv.Itoa(randCode))
 
 		if SentOK {
 			type data struct {

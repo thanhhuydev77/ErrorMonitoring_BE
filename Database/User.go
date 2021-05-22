@@ -10,7 +10,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	_ "log"
-	"main.go/General"
+	"main.go/CONST"
 	"main.go/Models"
 	_ "strconv"
 )
@@ -35,7 +35,7 @@ func Login(Email string, pass string) (bool, bool) {
 		return false, false
 	}
 	//Create a handle to the respective collection in the database.
-	collection := client.Database(General.DB).Collection(General.User)
+	collection := client.Database(CONST.DB).Collection(CONST.User)
 	//Perform FindOne operation & validate against the error.
 	err = collection.FindOne(context.TODO(), filter).Decode(&user)
 	if err != nil {
@@ -50,26 +50,26 @@ func Login(Email string, pass string) (bool, bool) {
 }
 
 //register a new user
-func Register(user Models.User) (bool, General.ErrorCode) {
+func Register(user Models.User) (bool, CONST.ErrorCode) {
 
 	if clientInstance == nil {
 		Err := "can not connect to database!"
 		log.Print(Err)
-		return false, General.DATABASE_ERROR
+		return false, CONST.DATABASE_ERROR
 	}
 	if CheckDuplicateEmail(user.Email) {
-		return false, General.DUPLICATE_EMAIL
+		return false, CONST.DUPLICATE_EMAIL
 	}
 	user.Password, _ = hashPassword(user.Password)
 
-	collection := clientInstance.Database(General.DB).Collection(General.User)
+	collection := clientInstance.Database(CONST.DB).Collection(CONST.User)
 	//Perform InsertOne operation & validate against the error.
 	_, err := collection.InsertOne(context.TODO(), user)
 	if err != nil {
 		log.Print(err.Error())
-		return false, General.UNKNOWN_ERROR
+		return false, CONST.UNKNOWN_ERROR
 	}
-	return true, General.NO_ERROR
+	return true, CONST.NO_ERROR
 }
 
 func Update(user Models.User) bool {
@@ -103,7 +103,7 @@ func Update(user Models.User) bool {
 		}}}
 	}
 
-	collection := clientInstance.Database(General.DB).Collection(General.User)
+	collection := clientInstance.Database(CONST.DB).Collection(CONST.User)
 
 	//Perform UpdateOne operation & validate against the error.
 	_, err := collection.UpdateOne(context.TODO(), filter, updater)
@@ -160,7 +160,7 @@ func GetUsers(Id string) ([]Models.User, error) {
 		return list, err
 	}
 	//Create a handle to the respective collection in the database.
-	collection := client.Database(General.DB).Collection(General.User)
+	collection := client.Database(CONST.DB).Collection(CONST.User)
 	//Perform Find operation & validate against the error.
 	cur, findError := collection.Find(context.TODO(), filter)
 	if findError != nil {
@@ -197,7 +197,7 @@ func UpdateProjectList(user Models.User) bool {
 	updater = bson.D{primitive.E{Key: "$set", Value: bson.D{
 		primitive.E{Key: "projectlist", Value: user.ProjectList},
 	}}}
-	collection := clientInstance.Database(General.DB).Collection(General.User)
+	collection := clientInstance.Database(CONST.DB).Collection(CONST.User)
 
 	//Perform UpdateOne operation & validate against the error.
 	_, err := collection.UpdateOne(context.TODO(), filter, updater)
@@ -229,7 +229,7 @@ func SearchUser(filter string) ([]Models.User, error) {
 	}
 
 	//Create a handle to the respective collection in the database.
-	collection := client.Database(General.DB).Collection(General.User)
+	collection := client.Database(CONST.DB).Collection(CONST.User)
 
 	//Perform Find operation & validate against the error.
 	cur, findError := collection.Find(context.TODO(), query, options.Find())
