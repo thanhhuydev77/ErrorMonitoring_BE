@@ -15,10 +15,11 @@ const (
 	Admin           Role      = 0
 	Editor          Role      = 1
 	Viewer          Role      = 2
-
-	Development Env = 0
-	Staging     Env = 1
-	Production  Env = 2
+	PROCESSING                = "processing"
+	UNRESOLVED                = "unresolved"
+	Development     Env       = 0
+	Staging         Env       = 1
+	Production      Env       = 2
 )
 
 type ErrorCode int

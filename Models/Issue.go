@@ -11,6 +11,7 @@ type Issue struct {
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 	Environment string    `json:"environment"`
+	CheckCode   string    `json:"checkCode"`
 	Frame       string    `json:"frame"`
 	Status      string    `json:"status"`
 	Assignee    string    `json:"assignee"`

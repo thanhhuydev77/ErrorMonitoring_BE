@@ -2,6 +2,7 @@ package Business
 
 import (
 	"github.com/pkg/errors"
+	"main.go/CONST"
 	"main.go/Database"
 	"main.go/General"
 	"main.go/Models"
@@ -10,16 +11,27 @@ import (
 
 func CreateIssue(ProjectId string, issue Models.Issue) bool {
 	issue.Id = General.CreateUUID()
-
+	result := false
 	project, Err := Database.GetProjectWithIssue(ProjectId)
 	if Err != nil || len(project) == 0 {
 		return false
 	}
-	project[0].Issues = append(project[0].Issues, issue)
-
-	result := Database.UpdateIssueList(project[0])
-
+	if !checkIssueExisted(project[0].Issues, issue) {
+		project[0].Issues = append(project[0].Issues, issue)
+		result = Database.UpdateIssueList(project[0])
+	}
 	return result
+}
+
+func checkIssueExisted(issuelist []Models.Issue, issue Models.Issue) bool {
+	for _, Issue := range issuelist {
+		if Issue.CheckCode == issue.CheckCode {
+			if Issue.Status == CONST.PROCESSING || Issue.Status == CONST.UNRESOLVED {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func FilterIssue(filter Models.IssueFilter) ([]Models.Issue, error) {
