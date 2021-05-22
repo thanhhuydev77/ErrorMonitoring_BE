@@ -12,7 +12,7 @@ import (
 func CreateIssue(ProjectId string, issue Models.Issue) bool {
 	issue.Id = General.CreateUUID()
 
-	project, Err := Database.GetProject(ProjectId)
+	project, Err := Database.GetProjectWithIssue(ProjectId)
 	if Err != nil || len(project) == 0 {
 		return false
 	}
