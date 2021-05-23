@@ -61,3 +61,40 @@ func FilterIssue(filter Models.IssueFilter) ([]Models.Issue, error) {
 
 	return listIssue, nil
 }
+
+func UpdateIssue(ProjectId string, issue Models.Issue) bool {
+	result := false
+	haveRec := false
+	project, Err := Database.GetProjectWithIssue(ProjectId)
+	if Err != nil || len(project) == 0 {
+		return false
+	}
+	for i := range project[0].Issues {
+		if project[0].Issues[i].Id == issue.Id {
+			project[0].Issues[i].Assignee = issue.Assignee
+			project[0].Issues[i].DueDate = issue.DueDate
+			project[0].Issues[i].Priority = issue.Priority
+			project[0].Issues[i].Status = issue.Status
+			haveRec = true
+			break
+		}
+	}
+	if haveRec {
+		result = Database.UpdateIssueList(project[0])
+	}
+	return result
+}
+
+func GetIssue(ProjectId string, Id string) (Models.Issue, bool) {
+
+	project, Err := Database.GetProjectWithIssue(ProjectId)
+	if Err != nil || len(project) == 0 {
+		return Models.Issue{}, false
+	}
+	for _, iss := range project[0].Issues {
+		if iss.Id == Id {
+			return iss, true
+		}
+	}
+	return Models.Issue{}, false
+}

@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func CreateIssue(w http.ResponseWriter, r *http.Request) {
+func IssueRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	vars := mux.Vars(r)
 	projectId := vars["projectId"]
@@ -28,17 +28,32 @@ func CreateIssue(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, result)
 		return
 	}
-	CreateOK := Business.CreateIssue(projectId, issueRequest.Issue)
+	if issueRequest.Type == "create-issue" {
+		CreateOK := Business.CreateIssue(projectId, issueRequest.Issue)
 
-	if !CreateOK {
-		result := General.CreateResponse(0, `Create Issue failed!`, Models.EmptyObject{})
+		if !CreateOK {
+			result := General.CreateResponse(0, `Update Issue failed!`, Models.EmptyObject{})
+			io.WriteString(w, result)
+			return
+		}
+
+		result := General.CreateResponse(1, `Update Issue successfully!`, Models.EmptyObject{})
 		io.WriteString(w, result)
 		return
 	}
+	if issueRequest.Type == "update-issue" {
+		UpdateOK := Business.UpdateIssue(projectId, issueRequest.Issue)
 
-	result := General.CreateResponse(1, `Create Issue successfully!`, Models.EmptyObject{})
-	io.WriteString(w, result)
-	return
+		if !UpdateOK {
+			result := General.CreateResponse(0, `Create Issue failed!`, Models.EmptyObject{})
+			io.WriteString(w, result)
+			return
+		}
+
+		result := General.CreateResponse(1, `Create Issue successfully!`, Models.EmptyObject{})
+		io.WriteString(w, result)
+		return
+	}
 
 }
 
@@ -63,4 +78,30 @@ func FilterInIssue(w http.ResponseWriter, r *http.Request) {
 	result := General.CreateResponse(1, `Filter Issue success!`, List)
 	io.WriteString(w, result)
 	return
+}
+
+func GetIssue(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+	vars := mux.Vars(r)
+	projectId := vars["projectId"]
+	Id := vars["Id"]
+
+	if projectId == "" {
+		result := General.CreateResponse(0, `Get Issue failed!`, Models.EmptyObject{})
+		io.WriteString(w, result)
+		return
+	}
+
+	issue, GetOK := Business.GetIssue(projectId, Id)
+
+	if !GetOK {
+		result := General.CreateResponse(0, `Get Issue failed!`, Models.EmptyObject{})
+		io.WriteString(w, result)
+		return
+	}
+
+	result := General.CreateResponse(1, `Get Issue successfully!`, issue)
+	io.WriteString(w, result)
+	return
+
 }
