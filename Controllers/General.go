@@ -76,6 +76,8 @@ func InitAllController(r *mux.Router) {
 	r.Handle("/project/search", AuthMW(http.HandlerFunc(SearchInProject))).Methods("PUT")
 
 	//Issue Controllers
-	r.HandleFunc("/issue/{projectId}", CreateIssue).Methods("POST")
+	r.HandleFunc("/issue/{projectId}", IssueRequest).Methods("POST")
+	r.Handle("/issue/{projectId}", AuthMW(http.HandlerFunc(IssueRequest))).Methods("PUT")
+	r.Handle("/issue/{projectId}/{Id}", AuthMW(http.HandlerFunc(GetIssue))).Methods("GET")
 
 }
