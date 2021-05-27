@@ -32,12 +32,12 @@ func IssueRequest(w http.ResponseWriter, r *http.Request) {
 		CreateOK := Business.CreateIssue(projectId, issueRequest.Issue)
 
 		if !CreateOK {
-			result := General.CreateResponse(0, `Update Issue failed!`, Models.EmptyObject{})
+			result := General.CreateResponse(0, `Create Issue failed!`, Models.EmptyObject{})
 			io.WriteString(w, result)
 			return
 		}
 
-		result := General.CreateResponse(1, `Update Issue successfully!`, Models.EmptyObject{})
+		result := General.CreateResponse(1, `Create Issue successfully!`, Models.EmptyObject{})
 		io.WriteString(w, result)
 		return
 	}
@@ -45,12 +45,12 @@ func IssueRequest(w http.ResponseWriter, r *http.Request) {
 		UpdateOK := Business.UpdateIssue(projectId, issueRequest.Issue)
 
 		if !UpdateOK {
-			result := General.CreateResponse(0, `Create Issue failed!`, Models.EmptyObject{})
+			result := General.CreateResponse(0, `Update Issue failed!`, Models.EmptyObject{})
 			io.WriteString(w, result)
 			return
 		}
 
-		result := General.CreateResponse(1, `Create Issue successfully!`, Models.EmptyObject{})
+		result := General.CreateResponse(1, `Update Issue successfully!`, Models.EmptyObject{})
 		io.WriteString(w, result)
 		return
 	}
