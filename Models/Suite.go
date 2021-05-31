@@ -41,7 +41,7 @@ type SuiteFilter struct {
 func FilterSuite(listSuite []Suite, field string, value string) []Suite {
 	var result []Suite
 	switch field {
-	case "Assignee":
+	case "Status":
 		for _, suite := range listSuite {
 			if suite.Status == value {
 				result = append(result, suite)
