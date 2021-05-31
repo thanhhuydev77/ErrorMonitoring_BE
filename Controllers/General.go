@@ -50,6 +50,9 @@ func Filter(w http.ResponseWriter, r *http.Request) {
 	case "issue":
 		FilterInIssue(w, r)
 		return
+	case "suite":
+		FilterInSuite(w, r)
+		return
 	default:
 		result := General.CreateResponse(0, `invalid type!`, Models.EmptyObject{})
 		io.WriteString(w, result)
@@ -79,5 +82,9 @@ func InitAllController(r *mux.Router) {
 	r.HandleFunc("/issue/{projectId}", IssueRequest).Methods("POST")
 	r.Handle("/issue/{projectId}", AuthMW(http.HandlerFunc(IssueRequest))).Methods("PUT")
 	r.Handle("/issue/{projectId}/{Id}", AuthMW(http.HandlerFunc(GetIssue))).Methods("GET")
+
+	//Automation test suites Controllers
+	r.HandleFunc("/suite/{projectId}", SuiteRequest).Methods("POST")
+	r.Handle("/suite/{projectId}/{Id}", AuthMW(http.HandlerFunc(GetSuite))).Methods("GET")
 
 }
