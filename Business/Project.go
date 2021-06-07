@@ -55,7 +55,7 @@ func GetProjects(email string, Id string) ([]Models.Project, error) {
 		}
 		return nil, errors.New("invalid user")
 	}
-	return Database.GetProject(Id)
+	return Database.GetProjectWithIssue(Id)
 }
 func AddMember(email string, project Models.Project) bool {
 	Project, _ := GetProjects("", project.Id)
