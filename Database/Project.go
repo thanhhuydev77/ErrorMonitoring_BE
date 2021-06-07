@@ -236,3 +236,27 @@ func GetProjectWithIssue(Id string) ([]Models.Project, error) {
 	}
 	return list, nil
 }
+
+func UpdateSuiteList(project Models.Project) bool {
+	if clientInstance == nil {
+		Err := "can not connect to database!"
+		log.Print(Err)
+		return false
+	}
+
+	filter := bson.D{primitive.E{Key: "id", Value: project.Id}}
+	var updater bson.D
+	//Define updater for to specifiy change to be updated.
+	updater = bson.D{primitive.E{Key: "$set", Value: bson.D{
+		primitive.E{Key: "suites", Value: project.Suites},
+	}}}
+	collection := clientInstance.Database(CONST.DB).Collection(CONST.Project)
+
+	//Perform UpdateOne operation & validate against the error.
+	_, err := collection.UpdateOne(context.TODO(), filter, updater)
+	if err != nil {
+		return false
+	}
+	//Return success without any error.
+	return true
+}
