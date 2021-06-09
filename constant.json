@@ -1,0 +1,12 @@
+{
+    "envList": [
+        "development",
+        "staging",
+        "production"
+    ],
+    "role": [
+        "admin",
+        "editor",
+        "viewer"
+    ]
+}
