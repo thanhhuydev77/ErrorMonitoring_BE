@@ -60,6 +60,7 @@ func FilterInSuite(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, result)
 		return
 	}
+	List = Models.SortSuiteByStartDate(List)
 	result := General.CreateResponse(1, `Filter Suite success!`, List)
 	io.WriteString(w, result)
 	return

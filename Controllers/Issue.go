@@ -75,6 +75,7 @@ func FilterInIssue(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, result)
 		return
 	}
+	List = Models.SortIssueByCreateTime(List)
 	result := General.CreateResponse(1, `Filter Issue success!`, List)
 	io.WriteString(w, result)
 	return

@@ -1,6 +1,9 @@
 package Models
 
-import "time"
+import (
+	"sort"
+	"time"
+)
 
 type Suite struct {
 	Id             string    `json:"id"`
@@ -77,4 +80,11 @@ func FilterSuite(listSuite []Suite, field string, value string) []Suite {
 		break
 	}
 	return result
+}
+
+func SortSuiteByStartDate(listSuite []Suite) []Suite {
+	sort.Slice(listSuite, func(i, j int) bool {
+		return listSuite[i].StartedTestsAt.After(listSuite[j].StartedTestsAt)
+	})
+	return listSuite
 }

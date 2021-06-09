@@ -2,6 +2,7 @@ package Models
 
 import (
 	"main.go/CONST"
+	"sort"
 	"strings"
 	"time"
 )
@@ -91,4 +92,11 @@ func FilterIssue(listIssue []Issue, field string, value string) []Issue {
 		break
 	}
 	return result
+}
+
+func SortIssueByCreateTime(listIssue []Issue) []Issue {
+	sort.Slice(listIssue, func(i, j int) bool {
+		return listIssue[i].CreateTime.After(listIssue[j].CreateTime)
+	})
+	return listIssue
 }
