@@ -9,7 +9,7 @@ type Suite struct {
 	Id             string    `json:"id"`
 	Environment    string    `json:"environment"`
 	StartedTestsAt time.Time `json:"startedTestsAt"`
-	EndedTestsAtn  time.Time `json:"endedTestsAtn"`
+	EndedTestsAt   time.Time `json:"endedTestsAt"`
 	TotalDuration  int       `json:"totalDuration"`
 	TotalSuites    int       `json:"totalSuites"`
 	TotalTests     int       `json:"totalTests"`
