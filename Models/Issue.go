@@ -1,9 +1,10 @@
 package Models
 
 import (
-	"main.go/CONST"
 	"strings"
 	"time"
+
+	"main.go/CONST"
 )
 
 type Issue struct {
