@@ -1,17 +1,19 @@
 package Business
 
 import (
+	"errors"
+	"main.go/CONST"
 	"main.go/Database"
 	"main.go/General"
 	"main.go/Models"
 )
 
-func CreateProject(project Models.Project) (bool, General.ErrorCode) {
+func CreateProject(project Models.Project) (bool, CONST.ErrorCode) {
 	project.Id = General.CreateUUID()
 
 	project.UserList = append(project.UserList, Models.UserRole{
 		Email: project.CreateUser,
-		Role:  "admin",
+		Role:  "owner",
 	})
 	result, ErrCode := Database.CreateProject(project)
 	if result {
@@ -36,6 +38,9 @@ func ChangeStatusProject(project Models.Project) bool {
 	return Database.ChangeStatusProject(project)
 }
 
+func SearchProject(filter string) ([]Models.Project, error) {
+	return Database.SearchProject(filter)
+}
 func GetProjects(email string, Id string) ([]Models.Project, error) {
 	if Id == "" && len(email) > 0 {
 		user, err := Database.GetUsers(email)
@@ -48,12 +53,17 @@ func GetProjects(email string, Id string) ([]Models.Project, error) {
 			}
 			return listProjectResult, nil
 		}
+		return nil, errors.New("invalid user")
 	}
-	return Database.GetProject(Id)
+	return Database.GetProjectWithIssue(Id)
 }
 func AddMember(email string, project Models.Project) bool {
 	Project, _ := GetProjects("", project.Id)
 	if len(Project) > 0 {
+
+		if !validateMember(project.UserList) {
+			return false
+		}
 		for _, userlist := range project.UserList {
 			Project[0].UserList = append(Project[0].UserList, userlist)
 
@@ -75,6 +85,9 @@ func AddMember(email string, project Models.Project) bool {
 func ModifyMember(email string, ParamProject Models.Project) bool {
 	CurrentProject, _ := GetProjects("", ParamProject.Id)
 	if len(CurrentProject) > 0 {
+		if !validateMember(ParamProject.UserList) {
+			return false
+		}
 		for i := range CurrentProject[0].UserList {
 			for _, paramUserList := range ParamProject.UserList {
 				if paramUserList.Email == CurrentProject[0].UserList[i].Email {
@@ -101,6 +114,9 @@ func ModifyMember(email string, ParamProject Models.Project) bool {
 func RemoveMember(email string, ParamProject Models.Project) bool {
 	CurrentProject, _ := GetProjects("", ParamProject.Id)
 	if len(CurrentProject) > 0 {
+		if !validateMember(ParamProject.UserList) {
+			return false
+		}
 		for _, userlist := range ParamProject.UserList {
 			if Models.Contain(CurrentProject[0].UserList, userlist) {
 				CurrentProject[0].UserList = Models.RemoveUserRole(CurrentProject[0].UserList, userlist)
@@ -121,4 +137,16 @@ func RemoveMember(email string, ParamProject Models.Project) bool {
 		return Database.UpdateUserList(CurrentProject[0])
 	}
 	return false
+}
+
+func validateMember(listmember []Models.UserRole) bool {
+	//check mail is registered
+	//if any not , return fail
+	for _, userlist := range listmember {
+		_, Err := Database.GetUsers(userlist.Email)
+		if Err != nil {
+			return false
+		}
+	}
+	return true
 }

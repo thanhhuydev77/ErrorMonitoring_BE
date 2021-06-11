@@ -14,6 +14,7 @@ type Project struct {
 	CreateTime time.Time  `json:"createTime"`
 	CreateUser string     `json:"createUser"`
 	Active     bool       `json:"active"`
+	Suites     []Suite    `json:"suites"`
 }
 
 type UserRole struct {

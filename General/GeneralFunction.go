@@ -3,9 +3,11 @@ package General
 import (
 	"crypto/tls"
 	"encoding/json"
+	"github.com/badoux/checkmail"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/nu7hatch/gouuid"
 	gomail "gopkg.in/mail.v2"
+	"main.go/CONST"
 	"main.go/Models"
 	"regexp"
 	"time"
@@ -62,8 +64,7 @@ func ValidateEmail(e string) bool {
 	if len(e) < 3 && len(e) > 254 {
 		return false
 	}
-	return emailRegex.MatchString(e)
-
+	return emailRegex.MatchString(e) && CheckMailExistence(e)
 }
 
 func CreateUUID() string {
@@ -88,11 +89,17 @@ func GetEmailFromToken(tokenString string) string {
 	})
 	return email
 }
-
 func at(t time.Time, f func()) {
 	jwt.TimeFunc = func() time.Time {
 		return t
 	}
 	f()
 	jwt.TimeFunc = time.Now
+}
+func CheckMailExistence(mail string) bool {
+	err := checkmail.ValidateHostAndUser(CONST.MAILSMTP, "", mail)
+	if _, ok := err.(checkmail.SmtpError); ok && err != nil {
+		return false
+	}
+	return true
 }

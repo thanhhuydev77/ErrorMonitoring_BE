@@ -2,10 +2,13 @@ package Controllers
 
 import (
 	"encoding/json"
+	"fmt"
+	"github.com/gorilla/mux"
 	_ "github.com/gorilla/mux"
 	"io"
 	"log"
 	"main.go/Business"
+	"main.go/CONST"
 	"main.go/General"
 	"main.go/Models"
 	"math/rand"
@@ -17,11 +20,14 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	user := Models.UserRequest{}
 	err1 := json.NewDecoder(r.Body).Decode(&user)
+
 	if err1 != nil {
 		result := General.CreateResponse(0, `wrong format, please try again!`, Models.EmptyObject{})
+		log.Print(err1.Error())
 		io.WriteString(w, result)
 		return
 	}
+
 	if user.Type == "login" {
 
 		IsExist, passOk := Business.Login(user.User.Email, user.User.Password)
@@ -46,7 +52,7 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if user.Type == "register" {
-		errCode := General.UNKNOWN_ERROR
+		errCode := CONST.UNKNOWN_ERROR
 		if General.ValidateEmail(user.User.Email) {
 			_, errCode = Business.Register(user.User)
 		}
@@ -93,7 +99,7 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 		//token
 		token := GenerateToken(user.User.Email)
 		//mail
-		SentOK := General.SendMail(user.User.Email, General.EMAILSUBJECT, General.EMAILTEXT+strconv.Itoa(randCode))
+		SentOK := General.SendMail(user.User.Email, CONST.EMAILSUBJECT, CONST.EMAILTEXT+strconv.Itoa(randCode))
 
 		if SentOK {
 			type data struct {
@@ -114,9 +120,26 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, result)
 		return
 	}
+
+	return
 }
 
-func GetUser(w http.ResponseWriter, r *http.Request) {
+func GetUserByProjectId(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+	vars := mux.Vars(r)
+	ProjectId := vars["Id"]
+	ListUser, Err := Business.GetUsersByProjectId(ProjectId)
+	if Err != nil || len(ListUser) == 0 {
+		result := General.CreateResponse(0, `Get users by Project Id failed!`, Models.EmptyObject{})
+		io.WriteString(w, result)
+		return
+	}
+	result := General.CreateResponse(1, `Get users by Project Id success!`, ListUser)
+	io.WriteString(w, result)
+	return
+
+}
+func authenUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	//vars := mux.Vars(r)
 	//Id := vars["Id"]
@@ -131,6 +154,26 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	result := General.CreateResponse(1, `Authentication success!`, List[0])
+	io.WriteString(w, result)
+	return
+}
+
+func SearchInUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+	query := r.URL.Query()
+	filter := query.Get("filter")
+	if len(filter) == 0 {
+		fmt.Println("filters not present")
+	}
+
+	List, err := Business.SearchUser(filter)
+	if err != nil || len(List) == 0 {
+		result := General.CreateResponse(0, `Search users failed!`, Models.EmptyObject{})
+		io.WriteString(w, result)
+		return
+	}
+
+	result := General.CreateResponse(1, `Search users success!`, List)
 	io.WriteString(w, result)
 	return
 }
