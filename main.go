@@ -21,7 +21,7 @@ func main() {
 	//allow all method CORS
 	handler := cors.AllowAll().Handler(r)
 	fmt.Print("Server is running at port 8001...")
-	http.ListenAndServe(":8001", handler)
+	http.ListenAndServeTLS(":8001", "server.crt", "server.key", handler)
 }
 func ReadConfigfile() {
 	jsonFile, err := os.Open("Config/AppConfig.json")
