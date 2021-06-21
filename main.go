@@ -24,7 +24,7 @@ func main() {
 	http.ListenAndServeTLS(":8001", "server.crt", "server.key", handler)
 }
 func ReadConfigfile() {
-	jsonFile, err := os.Open("Config/AppConfig.json")
+	jsonFile, err := os.Open("Config/AppConfig.text")
 	// if we os.Open returns an error then handle it
 	if err != nil {
 		fmt.Println(err)
