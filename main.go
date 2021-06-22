@@ -20,10 +20,19 @@ func main() {
 	Controllers.InitAllController(r)
 	//allow all method CORS
 	handler := cors.AllowAll().Handler(r)
-	fmt.Print("Server is running at port 8001...")
-	http.ListenAndServeTLS(":8001", "server.crt", "server.key", handler)
+	port := GetPort()
+	fmt.Print("Server is running at port" + port + "...")
+	http.ListenAndServeTLS(port, "server.crt", "server.key", handler)
 }
-
+func GetPort() string {
+	var port = os.Getenv("PORT")
+	// Set a default port if there is nothing in the environment
+	if port == "" {
+		port = "8001"
+		fmt.Println("INFO: No PORT environment variable detected, defaulting to " + port)
+	}
+	return ":" + port
+}
 func ReadConfigfile() {
 	jsonFile, err := os.Open("Config/AppConfig.text")
 	// if we os.Open returns an error then handle it
