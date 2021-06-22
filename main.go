@@ -22,7 +22,7 @@ func main() {
 	handler := cors.AllowAll().Handler(r)
 	port := GetPort()
 	fmt.Print("Server is running at port" + port + "...")
-	http.ListenAndServeTLS(port, "server.crt", "server.key", handler)
+	http.ListenAndServe(port, handler)
 }
 func GetPort() string {
 	var port = os.Getenv("PORT")
