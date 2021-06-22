@@ -1,10 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/rs/cors"
-	"io/ioutil"
 	"log"
 	"main.go/Controllers"
 	"main.go/Database"
@@ -33,18 +31,31 @@ func GetPort() string {
 	}
 	return ":" + port
 }
+
+//func ReadConfigfile() {
+//	jsonFile, err := os.Open("Config/AppConfig.text")
+//	// if we os.Open returns an error then handle it
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+//	fmt.Println("Opened successfully")
+//	// defer the closing of our jsonFile so that we can parse it later on
+//	defer jsonFile.Close()
+//
+//	byteValue, _ := ioutil.ReadAll(jsonFile)
+//
+//	json.Unmarshal((byteValue), &Models.AppConfig)
+//	log.Print("Read Config successfully!")
+//}
 func ReadConfigfile() {
-	jsonFile, err := os.Open("Config/AppConfig.text")
+	//jsonFile, err := os.Open("Config/AppConfig.text")
 	// if we os.Open returns an error then handle it
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println("Opened successfully")
-	// defer the closing of our jsonFile so that we can parse it later on
-	defer jsonFile.Close()
-
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-
-	json.Unmarshal((byteValue), &Models.AppConfig)
+	a := new(Models.Config)
+	a.HostMailPassword = "Thanhhuyd71t9"
+	a.HostMail = "errormonitoringvn@gmail.com"
+	a.AppKey = "thisissecreckeyyesitisreallyofcourcetrustmeitiskeyofthisapphahaha"
+	a.DBConnectionURL = "mongodb+srv://hathanhhuy:Thanhhuyd71t9@mycluster.5dvo9.mongodb.net/test?authSource=admin&replicaSet=atlas-f8f9l2-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true"
+	//json.Unmarshal((byteValue), &Models.AppConfig)
+	Models.AppConfig = a
 	log.Print("Read Config successfully!")
 }
