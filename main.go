@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/rs/cors"
 	"log"
@@ -8,7 +9,7 @@ import (
 	"main.go/Database"
 	"main.go/Models"
 	"net/http"
-	"os"
+	"strconv"
 )
 
 func main() {
@@ -22,14 +23,26 @@ func main() {
 	fmt.Print("Server is running at port" + port + "...")
 	http.ListenAndServe(port, handler)
 }
+
+//heroku
+//func GetPort() string {
+//	var port = os.Getenv("PORT")
+//	// Set a default port if there is nothing in the environment
+//	if port == "" {
+//		port = "8001"
+//		fmt.Println("INFO: No PORT environment variable detected, defaulting to " + port)
+//	}
+//	return ":" + port
+//}
+
 func GetPort() string {
-	var port = os.Getenv("PORT")
+	port := flag.Int("port", -1, "specify a port")
 	// Set a default port if there is nothing in the environment
-	if port == "" {
-		port = "8001"
-		fmt.Println("INFO: No PORT environment variable detected, defaulting to " + port)
+	if *port == -1 {
+		*port = 8001
+		fmt.Println("INFO: No PORT environment variable detected, defaulting to " + strconv.Itoa(*port))
 	}
-	return ":" + port
+	return ":" + strconv.Itoa(*port)
 }
 
 //func ReadConfigfile() {
