@@ -39,10 +39,12 @@ func main() {
 func ReadConfigfile() {
 	//jsonFile, err := os.Open("Config/AppConfig.text")
 	// if we os.Open returns an error then handle it
-	Models.AppConfig.HostMailPassword = "Thanhhuyd71t9"
-	Models.AppConfig.HostMail = "errormonitoringvn@gmail.com"
-	Models.AppConfig.AppKey = "thisissecreckeyyesitisreallyofcourcetrustmeitiskeyofthisapphahaha"
-	Models.AppConfig.DBConnectionURL = "mongodb+srv://hathanhhuy:Thanhhuyd71t9@mycluster.5dvo9.mongodb.net/test?authSource=admin&replicaSet=atlas-f8f9l2-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true"
+	a := new(Models.Config)
+	a.HostMailPassword = "Thanhhuyd71t9"
+	a.HostMail = "errormonitoringvn@gmail.com"
+	a.AppKey = "thisissecreckeyyesitisreallyofcourcetrustmeitiskeyofthisapphahaha"
+	a.DBConnectionURL = "mongodb+srv://hathanhhuy:Thanhhuyd71t9@mycluster.5dvo9.mongodb.net/test?authSource=admin&replicaSet=atlas-f8f9l2-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true"
 	//json.Unmarshal((byteValue), &Models.AppConfig)
+	Models.AppConfig = a
 	log.Print("Read Config successfully!")
 }
