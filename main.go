@@ -47,7 +47,7 @@ func GetPort() string {
 //}
 
 func ReadConfigfile() {
-	jsonFile, err := os.Open("Config/AppConfig.jsonJson")
+	jsonFile, err := os.Open("Config/AppConfig.json")
 	// if we os.Open returns an error then handle it
 	if err != nil {
 		fmt.Println(err)
@@ -61,16 +61,3 @@ func ReadConfigfile() {
 	json.Unmarshal((byteValue), &Models.AppConfig)
 	log.Print("Read Config successfully!")
 }
-
-//func ReadConfigfile() {
-//	//jsonFile, err := os.Open("Config/AppConfig.json")
-//	// if we os.Open returns an error then handle it
-//	a := new(Models.Config)
-//	a.HostMailPassword = "Thanhhuyd71t9"
-//	a.HostMail = "errormonitoringvn@gmail.com"
-//	a.AppKey = "thisissecreckeyyesitisreallyofcourcetrustmeitiskeyofthisapphahaha"
-//	a.DBConnectionURL = "mongodb+srv://hathanhhuy:Thanhhuyd71t9@mycluster.5dvo9.mongodb.net/test?authSource=admin&replicaSet=atlas-f8f9l2-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true"
-//	//json.Unmarshal((byteValue), &Models.AppConfig)
-//	Models.AppConfig = a
-//	log.Print("Read Config successfully!")
-//}
