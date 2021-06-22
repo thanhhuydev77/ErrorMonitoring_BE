@@ -1,1 +1,1 @@
-web: build/em
+web: build/main
