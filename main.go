@@ -47,7 +47,7 @@ func GetPort() string {
 //}
 
 func ReadConfigfile() {
-	jsonFile, err := os.Open("Config/AppConfig.text")
+	jsonFile, err := os.Open("Config/AppConfig.jsonJson")
 	// if we os.Open returns an error then handle it
 	if err != nil {
 		fmt.Println(err)
@@ -63,7 +63,7 @@ func ReadConfigfile() {
 }
 
 //func ReadConfigfile() {
-//	//jsonFile, err := os.Open("Config/AppConfig.text")
+//	//jsonFile, err := os.Open("Config/AppConfig.json")
 //	// if we os.Open returns an error then handle it
 //	a := new(Models.Config)
 //	a.HostMailPassword = "Thanhhuyd71t9"
