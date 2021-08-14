@@ -1,8 +1,6 @@
 package Controllers
 
 import (
-	"bytes"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -179,54 +177,6 @@ func SearchInUser(w http.ResponseWriter, r *http.Request) {
 
 	result := General.CreateResponse(1, `Search users success!`, List)
 	io.WriteString(w, result)
-	return
-}
-
-func UploadAvatar(w http.ResponseWriter, r *http.Request) {
-	w.Header().Add("Content-Type", "application/json")
-	file, _, err := r.FormFile("Avatar")
-	if err != nil {
-		fmt.Println(err)
-	}
-	token := r.URL.Query().Get("token")
-	email := General.GetEmailFromToken(token)
-
-	log.Print("email :" + email)
-	List, err := Business.GetUsers(email)
-	if err != nil || len(List) == 0 {
-		log.Print(err)
-		return
-	}
-	buf := bytes.NewBuffer(nil)
-	io.Copy(buf, file)
-	List[0].Avatar = base64.StdEncoding.EncodeToString(buf.Bytes())
-	//Business.UploadAvatar("./Public/Images/Avatars/"+handler.Filename,email)
-	//os.Remove("./Public/Images/Avatars/"+handler.Filename)
-	if Business.Update(List[0]) != true {
-		result := General.CreateResponse(0, `Upload Avatar Fail!`, Models.EmptyObject{})
-		io.WriteString(w, result)
-		return
-	}
-	result := General.CreateResponse(1, `Upload Avatar success!`, Models.EmptyObject{})
-	io.WriteString(w, result)
-	return
-
-}
-func LoadAvatar(w http.ResponseWriter, r *http.Request) {
-	w.Header().Add("Content-Type", "application/json")
-
-	//token := r.URL.Query().Get("token")
-	//email := General.GetEmailFromToken(token)
-	//log.Print("email :" + email)
-	////Avatar:= Business.LoadAvatar(email)
-	//
-	////if Avatar == nil {
-	////	result := General.CreateResponse(0, `Load Avatar Fail!`, Models.EmptyObject{})
-	////	io.WriteString(w, result)
-	////	return
-	////}
-	//result := General.CreateResponse(1, `Load Avatar success!`,Avatar )
-	//io.WriteString(w, result)
 	return
 }
 

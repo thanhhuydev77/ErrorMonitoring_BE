@@ -1,24 +1,18 @@
 package Database
 
 import (
-	"bytes"
 	"context"
 	_ "database/sql"
-	"encoding/base64"
-	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/gridfs"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
-	"io/ioutil"
 	"log"
 	_ "log"
 	"main.go/CONST"
 	"main.go/Models"
 	_ "strconv"
-	"time"
 )
 
 //login
@@ -257,66 +251,4 @@ func SearchUser(filter string) ([]Models.User, error) {
 		return list, mongo.ErrNoDocuments
 	}
 	return list, nil
-}
-
-func UploadAvatar(file string, filename string) bool {
-
-	data, err := ioutil.ReadFile(file)
-	if err != nil {
-		log.Print(err)
-		return false
-	}
-	conn, _ := GetMongoClient()
-	bucket, err := gridfs.NewBucket(
-		conn.Database(CONST.DB),
-	)
-	if err != nil {
-		log.Print(err)
-		return false
-	}
-	uploadStream, err := bucket.OpenUploadStream(
-		filename,
-	)
-	if err != nil {
-		fmt.Println(err)
-		return false
-	}
-	defer uploadStream.Close()
-
-	fileSize, err := uploadStream.Write(data)
-	if err != nil {
-		log.Print(err)
-		return false
-	}
-	log.Printf("Write file to DB was successful. File size: %d M\n", fileSize)
-	return true
-}
-
-func DownloadAvatar(fileName string) string {
-	conn, _ := GetMongoClient()
-
-	// For CRUD operations, here is an example
-	db := conn.Database(CONST.DB)
-	fsFiles := db.Collection("fs.files")
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	var results bson.M
-	err := fsFiles.FindOne(ctx, bson.M{}).Decode(&results)
-	if err != nil {
-		log.Print(err)
-		return ""
-	}
-
-	bucket, _ := gridfs.NewBucket(
-		db,
-	)
-	var buf bytes.Buffer
-	dStream, err := bucket.DownloadToStreamByName(fileName, &buf)
-	if err != nil {
-		log.Print(err)
-		return ""
-	}
-	fmt.Printf("File size to download: %v\n", dStream)
-	ioutil.WriteFile(fileName+".JPG", buf.Bytes(), 0600)
-	a := base64.StdEncoding.EncodeToString(buf.Bytes())
-	return a
 }

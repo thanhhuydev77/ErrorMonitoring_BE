@@ -57,7 +57,3 @@ func GetUsersByProjectId(ProjectId string) ([]Models.User, error) {
 func SearchUser(filter string) ([]Models.User, error) {
 	return Database.SearchUser(filter)
 }
-
-func UploadAvatar(file string, filename string) bool {
-	return Database.UploadAvatar(file, filename)
-}
