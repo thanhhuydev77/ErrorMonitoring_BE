@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"io/ioutil"
 	"log"
@@ -24,6 +25,15 @@ func main() {
 	fmt.Print("Server is running at port" + port + "...")
 	http.ListenAndServe(port, handler)
 }
+func NewRouter() *mux.Router {
+	router := mux.NewRouter().StrictSlash(true)
+
+	// Server CSS, JS & Images Statically.
+	router.
+		PathPrefix("/public/").
+		Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("."+"/public/"))))
+	return router
+}
 
 //heroku
 func GetPort() string {
@@ -35,16 +45,6 @@ func GetPort() string {
 	}
 	return ":" + port
 }
-
-//func GetPort() string {
-//	port := flag.Int("port", -1, "specify a port")
-//	// Set a default port if there is nothing in the environment
-//	if *port == -1 {
-//		*port = 8001
-//		fmt.Println("INFO: No PORT environment variable detected, defaulting to " + strconv.Itoa(*port))
-//	}
-//	return ":" + strconv.Itoa(*port)
-//}
 
 func ReadConfigfile() {
 	jsonFile, err := os.Open("Config/AppConfig.json")

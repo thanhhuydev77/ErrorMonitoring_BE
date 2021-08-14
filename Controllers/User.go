@@ -1,6 +1,8 @@
 package Controllers
 
 import (
+	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -86,12 +88,13 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if user.Type == "forgot-password" {
-		EmailExsisted := Business.CheckUserExsist(user.User.Email)
-		if !EmailExsisted {
+		EmailExisted := Business.CheckUserExsist(user.User.Email)
+		if EmailExisted == nil {
 			result := General.CreateResponse(0, `Email unregistered!`, Models.EmptyObject{})
 			io.WriteString(w, result)
 			return
 		}
+		user.User = *EmailExisted
 		min := 100000
 		max := 999999
 		//code random
@@ -99,7 +102,7 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 		//token
 		token := GenerateToken(user.User.Email)
 		//mail
-		SentOK := General.SendMail(user.User.Email, CONST.EMAILSUBJECT, CONST.EMAILTEXT+strconv.Itoa(randCode))
+		SentOK := General.SendMail(user.User.Email, CONST.EMAILSUBJECT, strconv.Itoa(randCode), user.User.FullName)
 
 		if SentOK {
 			type data struct {
@@ -139,6 +142,7 @@ func GetUserByProjectId(w http.ResponseWriter, r *http.Request) {
 	return
 
 }
+
 func authenUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	//vars := mux.Vars(r)
@@ -175,5 +179,62 @@ func SearchInUser(w http.ResponseWriter, r *http.Request) {
 
 	result := General.CreateResponse(1, `Search users success!`, List)
 	io.WriteString(w, result)
+	return
+}
+
+func UploadAvatar(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+	file, _, err := r.FormFile("Avatar")
+	if err != nil {
+		fmt.Println(err)
+	}
+	token := r.URL.Query().Get("token")
+	email := General.GetEmailFromToken(token)
+
+	log.Print("email :" + email)
+	List, err := Business.GetUsers(email)
+	if err != nil || len(List) == 0 {
+		log.Print(err)
+		return
+	}
+	buf := bytes.NewBuffer(nil)
+	io.Copy(buf, file)
+	List[0].Avatar = base64.StdEncoding.EncodeToString(buf.Bytes())
+	//Business.UploadAvatar("./Public/Images/Avatars/"+handler.Filename,email)
+	//os.Remove("./Public/Images/Avatars/"+handler.Filename)
+	if Business.Update(List[0]) != true {
+		result := General.CreateResponse(0, `Upload Avatar Fail!`, Models.EmptyObject{})
+		io.WriteString(w, result)
+		return
+	}
+	result := General.CreateResponse(1, `Upload Avatar success!`, Models.EmptyObject{})
+	io.WriteString(w, result)
+	return
+
+}
+func LoadAvatar(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+
+	//token := r.URL.Query().Get("token")
+	//email := General.GetEmailFromToken(token)
+	//log.Print("email :" + email)
+	////Avatar:= Business.LoadAvatar(email)
+	//
+	////if Avatar == nil {
+	////	result := General.CreateResponse(0, `Load Avatar Fail!`, Models.EmptyObject{})
+	////	io.WriteString(w, result)
+	////	return
+	////}
+	//result := General.CreateResponse(1, `Load Avatar success!`,Avatar )
+	//io.WriteString(w, result)
+	return
+}
+
+func TestTrello(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+
+	General.TrelloCreateCard()
+
+	io.WriteString(w, "ok")
 	return
 }

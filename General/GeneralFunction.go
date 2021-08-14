@@ -1,15 +1,22 @@
 package General
 
 import (
+	"bytes"
 	"crypto/tls"
 	"encoding/json"
 	"github.com/badoux/checkmail"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/nu7hatch/gouuid"
 	gomail "gopkg.in/mail.v2"
+	"html/template"
+	"io"
+	"log"
 	"main.go/CONST"
 	"main.go/Models"
+	"net/http"
+	"os"
 	"regexp"
+	"strconv"
 	"time"
 )
 
@@ -21,7 +28,7 @@ import (
 //	return user
 //}
 
-func SendMail(to string, object string, text string) bool {
+func SendMail(to string, object string, text string, Name string) bool {
 	m := gomail.NewMessage()
 
 	// Set E-Mail sender
@@ -30,11 +37,29 @@ func SendMail(to string, object string, text string) bool {
 	// Set E-Mail receivers
 	m.SetHeader("To", to)
 
+	type info struct {
+		Name string
+		Text string
+	}
+	t := template.New("Mail2.html")
+	Info := info{Name: Name, Text: text}
+	var err error
+	t, err = t.ParseFiles("Template/Mail2.html")
+	if err != nil {
+		log.Println(err)
+	}
+	var tpl bytes.Buffer
+	if err := t.Execute(&tpl, Info); err != nil {
+		log.Println(err)
+	}
+
+	result := tpl.String()
+
 	// Set E-Mail subject
 	m.SetHeader("Subject", object)
 
 	// Set E-Mail body. You can set plain text or html with text/html
-	m.SetBody("text/plain", text)
+	m.SetBody("text/html", result)
 
 	// Settings for SMTP server
 	d := gomail.NewDialer("smtp.gmail.com", 587, Models.AppConfig.HostMail, Models.AppConfig.HostMailPassword)
@@ -102,4 +127,31 @@ func CheckMailExistence(mail string) bool {
 		return false
 	}
 	return true
+}
+func UploadPicture(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+	file, handler, err := r.FormFile("file")
+	if err != nil {
+		//fmt.Print(err)
+		io.WriteString(w, `{"message":"Can’t upload avatar"}`)
+		return
+	}
+	defer file.Close()
+
+	f, _ := os.OpenFile("../public/images/avatars/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+
+	defer f.Close()
+	io.Copy(f, file)
+	io.WriteString(w, `{ "status": 200,
+    "message": "Upload avatar success",
+    "data": {
+        "fieldname": "file",
+        "originalname": "`+handler.Filename+`",
+        "destination": "public",
+		 "mimetype": "`+handler.Header.Get("Content-Type")+`",
+        "filename": "`+handler.Filename+`",
+        "path": "public\\images\\avatars\\`+handler.Filename+`",
+        "size": `+strconv.Itoa(int(handler.Size))+`
+    }
+}`)
 }

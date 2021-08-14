@@ -71,6 +71,8 @@ func InitAllController(r *mux.Router) {
 	r.Handle("/user", AuthMW(http.HandlerFunc(authenUser))).Methods("GET")
 	r.Handle("/user/{Id}", AuthMW(http.HandlerFunc(GetUserByProjectId))).Methods("GET")
 	r.Handle("/user/search", AuthMW(http.HandlerFunc(SearchInUser))).Methods("PUT")
+	r.Handle("/user/uploadAvatar", AuthMW(http.HandlerFunc(UploadAvatar))).Methods("PUT")
+	//r.Handle("/user/loadAvatar", AuthMW(http.HandlerFunc(LoadAvatar))).Methods("POST")
 	//Project Controllers
 	r.Handle("/project", AuthMW(http.HandlerFunc(ProjectRequest))).Methods("POST")
 	r.Handle("/project", AuthMW(http.HandlerFunc(GetProject))).Methods("GET")
@@ -87,4 +89,6 @@ func InitAllController(r *mux.Router) {
 	r.HandleFunc("/suite/{projectId}", SuiteRequest).Methods("POST")
 	r.Handle("/suite/{projectId}/{Id}", AuthMW(http.HandlerFunc(GetSuite))).Methods("GET")
 
+	//test trello integration
+	r.HandleFunc("/TestTrello", TestTrello).Methods("POST")
 }

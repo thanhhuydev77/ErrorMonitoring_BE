@@ -29,12 +29,12 @@ func GetUsers(Id string) ([]Models.User, error) {
 	return Database.GetUsers(Id)
 }
 
-func CheckUserExsist(email string) bool {
+func CheckUserExsist(email string) *Models.User {
 	user, _ := Database.GetUsers(email)
 	if len(user) == 0 {
-		return false
+		return nil
 	}
-	return true
+	return &user[0]
 }
 func GetUsersByProjectId(ProjectId string) ([]Models.User, error) {
 	ProjectList, Err := GetProjects("", ProjectId)
@@ -56,4 +56,8 @@ func GetUsersByProjectId(ProjectId string) ([]Models.User, error) {
 
 func SearchUser(filter string) ([]Models.User, error) {
 	return Database.SearchUser(filter)
+}
+
+func UploadAvatar(file string, filename string) bool {
+	return Database.UploadAvatar(file, filename)
 }

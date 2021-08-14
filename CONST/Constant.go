@@ -6,7 +6,7 @@ const (
 	MAILSMTP                  = "smtp.gmail.com"
 	Project                   = "project"
 	EMAILSUBJECT              = "[EM] Password Reset Request"
-	EMAILTEXT                 = "Hi Sir/Madam,\nWe have received a request to change your password.\nPlease verify using the following code : "
+	EMAILTEXT                 = "We have received a request to change your password.\nPlease verify using the following code : "
 	DATABASE_ERROR  ErrorCode = -1
 	NO_ERROR        ErrorCode = 0
 	DUPLICATE_EMAIL ErrorCode = 1
