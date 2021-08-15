@@ -7,17 +7,21 @@ import (
 	"main.go/Models"
 )
 
-func TrelloCreateCard(appKey string, token string, boardId string, issue Models.Issue) {
+func TrelloCreateCard(appKey string, token string, boardId string, listId string, issue Models.Issue) {
 	client := trello.NewClient(appKey, token)
 	//get board
 	board, err := client.GetBoard(boardId, trello.Defaults())
 	log.Print(board.Name)
 	//get list
-	lists, err := board.GetLists(trello.Defaults())
-	log.Print(lists[0].Name)
+	list, err := client.GetList(listId)
+	if list == nil {
+		log.Print(err.Error())
+		return
+	}
+	log.Print(list.Name)
 
 	//create card
-	lists[0].AddCard(&trello.Card{Name: issue.Name, Desc: issue.Description}, trello.Defaults())
+	list.AddCard(&trello.Card{Name: issue.Name, Desc: issue.Description}, trello.Defaults())
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -38,4 +42,12 @@ func SlackCreateNortification(botToken string, ChannelId string, issue Models.Is
 	if err != nil {
 		log.Print("%s\n", err)
 	}
+}
+func GetListInBoard(appToken string, userId string, boardId string) []*trello.List {
+	client := trello.NewClient(appToken, userId)
+	//get board
+	board, _ := client.GetBoard(boardId, trello.Defaults())
+	//get list
+	lists, _ := board.GetLists(trello.Defaults())
+	return lists
 }

@@ -89,6 +89,7 @@ func InitAllController(r *mux.Router) {
 
 	//Trello Integration
 	r.HandleFunc("/TestTrello", TestTrello).Methods("POST")
+	r.HandleFunc("/GetListBoard", GetListBoard).Methods("GET")
 
 	//Slack Integration
 	r.HandleFunc("/TestSlack", TestSlack).Methods("POST")
