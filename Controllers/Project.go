@@ -96,6 +96,36 @@ func ProjectRequest(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, result)
 
 		return
+	case "update-Trello":
+		{
+			ChangeTrelloInfoOK := false
+			if len(projectRequest.Project.Id) > 0 {
+				ChangeTrelloInfoOK = Business.UpdateTrelloInfo(projectRequest.Project)
+			}
+			if !ChangeTrelloInfoOK {
+				result := General.CreateResponse(0, `Change Trello Info failed!`, Models.EmptyObject{})
+				io.WriteString(w, result)
+				return
+			}
+			result := General.CreateResponse(1, `Change Trello Info success!`, Models.EmptyObject{})
+			io.WriteString(w, result)
+			return
+		}
+	case "update-Slack":
+		{
+			ChangeTrelloInfoOK := false
+			if len(projectRequest.Project.Id) > 0 {
+				ChangeTrelloInfoOK = Business.UpdateSlackInfo(projectRequest.Project)
+			}
+			if !ChangeTrelloInfoOK {
+				result := General.CreateResponse(0, `Change Slack Info failed!`, Models.EmptyObject{})
+				io.WriteString(w, result)
+				return
+			}
+			result := General.CreateResponse(1, `Change Slack Info success!`, Models.EmptyObject{})
+			io.WriteString(w, result)
+			return
+		}
 	}
 
 }

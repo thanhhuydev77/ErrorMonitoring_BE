@@ -5,16 +5,20 @@ import (
 )
 
 type Project struct {
-	Id         string     `json:"id"`
-	Name       string     `json:"name"`
-	Platform   string     `json:"platform"`
-	UserList   []UserRole `json:"userList"`
-	Issues     []Issue    `json:"issues"`
-	EnvList    []string   `json:"envList"`
-	CreateTime time.Time  `json:"createTime"`
-	CreateUser string     `json:"createUser"`
-	Active     bool       `json:"active"`
-	Suites     []Suite    `json:"suites"`
+	Id           string     `json:"id"`
+	Name         string     `json:"name"`
+	Platform     string     `json:"platform"`
+	UserList     []UserRole `json:"userList"`
+	Issues       []Issue    `json:"issues"`
+	EnvList      []string   `json:"envList"`
+	CreateTime   time.Time  `json:"createTime"`
+	CreateUser   string     `json:"createUser"`
+	Active       bool       `json:"active"`
+	Suites       []Suite    `json:"suites"`
+	EnableTrello bool       `json:"enableTrello"`
+	TrelloInfo   TrelloInfo `json:"trelloInfo"`
+	EnableSlack  bool       `json:"enableSlack"`
+	SlackInfo    SlackInfo  `json:"slackInfo"`
 }
 
 type UserRole struct {

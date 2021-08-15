@@ -150,3 +150,13 @@ func validateMember(listmember []Models.UserRole) bool {
 	}
 	return true
 }
+
+//update Trello
+func UpdateTrelloInfo(project Models.Project) bool {
+	return Database.UpdateIntegration(project, 1)
+}
+
+//update Trello
+func UpdateSlackInfo(project Models.Project) bool {
+	return Database.UpdateIntegration(project, 2)
+}

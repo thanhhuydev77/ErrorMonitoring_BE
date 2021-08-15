@@ -260,3 +260,39 @@ func UpdateSuiteList(project Models.Project) bool {
 	//Return success without any error.
 	return true
 }
+
+func UpdateIntegration(project Models.Project, Type int) bool {
+	if clientInstance == nil {
+		Err := "can not connect to database!"
+		log.Print(Err)
+		return false
+	}
+
+	filter := bson.D{primitive.E{Key: "id", Value: project.Id}}
+	updater := bson.D{}
+	if Type == 1 {
+		//Trello
+		updater = bson.D{primitive.E{Key: "$set", Value: bson.D{
+			primitive.E{Key: "enableTrello", Value: project.EnableTrello},
+			primitive.E{Key: "trelloInfo", Value: project.TrelloInfo},
+		}}}
+	} else {
+		if Type == 2 {
+			//Slack
+			updater = bson.D{primitive.E{Key: "$set", Value: bson.D{
+				primitive.E{Key: "enableSlack", Value: project.EnableSlack},
+				primitive.E{Key: "slackInfo", Value: project.SlackInfo},
+			}}}
+		}
+	}
+
+	collection := clientInstance.Database(CONST.DB).Collection(CONST.Project)
+
+	//Perform UpdateOne operation & validate against the error.
+	_, err := collection.UpdateOne(context.TODO(), filter, updater)
+	if err != nil {
+		return false
+	}
+	//Return success without any error.
+	return true
+}

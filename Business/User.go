@@ -21,7 +21,6 @@ func Register(user Models.User) (bool, CONST.ErrorCode) {
 //update
 func Update(user Models.User) bool {
 	return Database.Update(user)
-
 }
 
 ////get a user or all users

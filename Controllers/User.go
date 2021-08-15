@@ -183,7 +183,15 @@ func SearchInUser(w http.ResponseWriter, r *http.Request) {
 func TestTrello(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 
-	General.TrelloCreateCard()
+	//General.TrelloCreateCard()
+
+	io.WriteString(w, "ok")
+	return
+}
+func TestSlack(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+
+	//General.SlackCreateNortification()
 
 	io.WriteString(w, "ok")
 	return

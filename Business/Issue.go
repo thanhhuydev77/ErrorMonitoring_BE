@@ -19,7 +19,15 @@ func CreateIssue(ProjectId string, issue Models.Issue) bool {
 	if !checkIssueExisted(project[0].Issues, issue) {
 		project[0].Issues = append(project[0].Issues, issue)
 		result = Database.UpdateIssueList(project[0])
+		//integrate Trello and Slack
+		if project[0].EnableTrello {
+			General.TrelloCreateCard(project[0].TrelloInfo.AppToken, project[0].TrelloInfo.UserID, project[0].TrelloInfo.BoardID, issue)
+		}
+		if project[0].EnableSlack {
+			General.SlackCreateNortification(project[0].SlackInfo.BotToken, project[0].SlackInfo.ChanelId, issue)
+		}
 	}
+
 	return result
 }
 
