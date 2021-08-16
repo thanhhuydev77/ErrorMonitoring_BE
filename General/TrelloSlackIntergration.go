@@ -10,18 +10,16 @@ import (
 func TrelloCreateCard(appKey string, token string, boardId string, listId string, issue Models.Issue) {
 	client := trello.NewClient(appKey, token)
 	//get board
-	board, err := client.GetBoard(boardId, trello.Defaults())
-	log.Print(board.Name)
+	//board, err := client.GetBoard(boardId, trello.Defaults())
 	//get list
 	list, err := client.GetList(listId)
 	if list == nil {
 		log.Print(err.Error())
 		return
 	}
-	log.Print(list.Name)
 
 	//create card
-	list.AddCard(&trello.Card{Name: issue.Name, Desc: issue.Description}, trello.Defaults())
+	list.AddCard(&trello.Card{Name: issue.Name, Desc: "## MESSAGE\n" + issue.Description + "\n## EXCEPTION\n" + issue.Frame + "\n## ADDITIONAL DATA\n" + issue.Detail}, trello.Defaults())
 	if err != nil {
 		log.Println(err.Error())
 	}

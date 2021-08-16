@@ -11,8 +11,8 @@ import (
 func GetListBoard(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	query := r.URL.Query()
-	appToken := query.Get("apptoken")
-	userId := query.Get("userID")
+	appToken := query.Get("appToken")
+	userId := query.Get("userId")
 	boardId := query.Get("boardId")
 	if len(appToken) == 0 || len(userId) == 0 {
 		fmt.Println("appToken or userId is empty")
