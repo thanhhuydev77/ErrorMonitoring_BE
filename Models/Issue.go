@@ -8,26 +8,26 @@ import (
 )
 
 type Issue struct {
-	Id          string    `json:"id"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	Environment string    `json:"environment"`
-	CheckCode   string    `json:"checkCode"`
-	Frame       string    `json:"frame"`
-	Lineno      int       `json:"lineno"`
-	Colno       int       `json:"colno"`
-	Status      string    `json:"status"`
-	Assignee    string    `json:"assignee"`
-	Path        string    `json:"path"`
-	DueDate     time.Time `json:"dueDate"`
-	Priority    string    `json:"priority"`
-	Detail      string    `json:"detail"`
-	CreateTime  time.Time `json:"createTime"`
+	Id          string    `json:"id" bson:"id"`
+	Name        string    `json:"name" bson:"name"`
+	Description string    `json:"description" bson:"description"`
+	Environment string    `json:"environment" bson:"environment"`
+	CheckCode   string    `json:"checkCode" bson:"checkCode"`
+	Frame       string    `json:"frame" bson:"frame"`
+	Lineno      int       `json:"lineno" bson:"lineNo"`
+	Colno       int       `json:"colno" bson:"colNo"`
+	Status      string    `json:"status" bson:"status"`
+	Assignee    string    `json:"assignee" bson:"assignee"`
+	Path        string    `json:"path" bson:"path"`
+	DueDate     time.Time `json:"dueDate" bson:"dueDate"`
+	Priority    string    `json:"priority" bson:"priority"`
+	Detail      string    `json:"detail" bson:"detail"`
+	CreateTime  time.Time `json:"createTime" bson:"createTime"`
 }
 
 type IssueRequest struct {
-	Type  string `json:"type"`
-	Issue Issue  `json:"Issue"`
+	Type  string `json:"type" bson:"type"`
+	Issue Issue  `json:"Issue" bson:"issue"`
 }
 
 type IssueFilter struct {

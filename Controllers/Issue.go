@@ -29,15 +29,15 @@ func IssueRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if issueRequest.Type == "create-issue" {
-		CreateOK := Business.CreateIssue(projectId, issueRequest.Issue)
+		CreateOK, ErrMsg := Business.CreateIssue(projectId, issueRequest.Issue)
 
 		if !CreateOK {
-			result := General.CreateResponse(0, `Create Issue failed!`, Models.EmptyObject{})
+			result := General.CreateResponse(0, `Create Issue failed!`, ErrMsg)
 			io.WriteString(w, result)
 			return
 		}
 
-		result := General.CreateResponse(1, `Create Issue successfully!`, Models.EmptyObject{})
+		result := General.CreateResponse(1, `Create Issue successfully!`, ErrMsg)
 		io.WriteString(w, result)
 		return
 	}

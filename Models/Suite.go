@@ -6,26 +6,26 @@ import (
 )
 
 type Suite struct {
-	Id             string    `json:"id"`
-	Environment    string    `json:"environment"`
-	StartedTestsAt time.Time `json:"startedTestsAt"`
-	EndedTestsAt   time.Time `json:"endedTestsAt"`
-	TotalDuration  int       `json:"totalDuration"`
-	TotalSuites    int       `json:"totalSuites"`
-	TotalTests     int       `json:"totalTests"`
-	TotalFailed    int       `json:"totalFailed"`
-	TotalPassed    int       `json:"totalPassed"`
-	TotalPending   int       `json:"totalPending"`
-	TotalSkipped   int       `json:"totalSkipped"`
-	Runs           string    `json:"runs"`
-	BranchInfo     string    `json:"branchInfo"`
-	BrowserPath    string    `json:"browserPath"`
-	BrowserName    string    `json:"browserName"`
-	BrowserVersion string    `json:"browserVersion"`
-	OsName         string    `json:"osName"`
-	OsVersion      string    `json:"osVersion"`
-	CypressVersion string    `json:"cypressVersion"`
-	Status         string    `json:"status"`
+	Id             string    `json:"id" bson:"id"`
+	Environment    string    `json:"environment" bson:"environment"`
+	StartedTestsAt time.Time `json:"startedTestsAt" bson:"startedTestsAt"`
+	EndedTestsAt   time.Time `json:"endedTestsAt" bson:"endedTestsAt"`
+	TotalDuration  int       `json:"totalDuration" bson:"totalDuration"`
+	TotalSuites    int       `json:"totalSuites" bson:"totalSuites"`
+	TotalTests     int       `json:"totalTests" bson:"totalTests"`
+	TotalFailed    int       `json:"totalFailed" bson:"totalFailed"`
+	TotalPassed    int       `json:"totalPassed" bson:"totalPassed"`
+	TotalPending   int       `json:"totalPending" bson:"totalPending"`
+	TotalSkipped   int       `json:"totalSkipped" bson:"totalSkipped"`
+	Runs           string    `json:"runs" bson:"runs"`
+	BranchInfo     string    `json:"branchInfo" bson:"branchInfo"`
+	BrowserPath    string    `json:"browserPath" bson:"browserPath"`
+	BrowserName    string    `json:"browserName" bson:"browserName"`
+	BrowserVersion string    `json:"browserVersion" bson:"browserVersion"`
+	OsName         string    `json:"osName" bson:"osName"`
+	OsVersion      string    `json:"osVersion" bson:"osVersion"`
+	CypressVersion string    `json:"cypressVersion" bson:"cypressVersion"`
+	Status         string    `json:"status" bson:"status"`
 }
 
 type SuiteRequest struct {

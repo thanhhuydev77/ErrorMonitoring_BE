@@ -1,18 +1,18 @@
 package Models
 
 type User struct {
-	Email        string        `json:"email"`
-	Organization string        `json:"organization"`
-	Position     string        `json:"position"`
-	Avatar       string        `json:"avatar"`
-	Password     string        `json:"password"`
-	FullName     string        `json:"fullName"`
-	MainPlatform string        `json:"mainPlatform"`
-	ProjectList  []ProjectList `json:"projectList"`
+	Email        string        `json:"email" bson:"email"`
+	Organization string        `json:"organization" bson:"organization"`
+	Position     string        `json:"position" bson:"position"`
+	Avatar       string        `json:"avatar" bson:"avatar"`
+	Password     string        `json:"password" bson:"password"`
+	FullName     string        `json:"fullName" bson:"fullName"`
+	MainPlatform string        `json:"mainPlatform" bson:"mainPlatform"`
+	ProjectList  []ProjectList `json:"projectList" bson:"projectList"`
 }
 type ProjectList struct {
-	ProjectId string `json:"projectId"`
-	Role      string `json:"role"`
+	ProjectId string `json:"projectId" bson:"projectId"`
+	Role      string `json:"role" bson:"role"`
 }
 
 type UserRequest struct {

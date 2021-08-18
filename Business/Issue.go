@@ -9,26 +9,40 @@ import (
 	"time"
 )
 
-func CreateIssue(ProjectId string, issue Models.Issue) bool {
+func CreateIssue(ProjectId string, issue Models.Issue) (bool, string) {
 	issue.Id = General.CreateUUID()
 	result := false
+	ErrMessage := ""
 	project, Err := Database.GetProjectWithIssue(ProjectId)
 	if Err != nil || len(project) == 0 {
-		return false
+		return false, "ProjectId is invalid"
 	}
 	if !checkIssueExisted(project[0].Issues, issue) {
 		project[0].Issues = append(project[0].Issues, issue)
 		result = Database.UpdateIssueList(project[0])
 		//integrate Trello and Slack
+		if !result {
+			return result, "Update Issue failed"
+		}
 		if project[0].EnableTrello {
-			General.TrelloCreateCard(project[0].TrelloInfo.AppToken, project[0].TrelloInfo.UserID, project[0].TrelloInfo.BoardID, project[0].TrelloInfo.ListID, issue)
+			TrelloMsg := ""
+			_, TrelloMsg = General.TrelloCreateCard(project[0].TrelloInfo.AppToken, project[0].TrelloInfo.UserID, project[0].TrelloInfo.BoardID, project[0].TrelloInfo.ListID, issue)
+			if TrelloMsg != "" {
+				ErrMessage += TrelloMsg
+			}
 		}
 		if project[0].EnableSlack {
-			General.SlackCreateNortification(project[0].SlackInfo.BotToken, project[0].SlackInfo.ChanelId, issue)
+			SlackMsg := ""
+			_, SlackMsg = General.SlackCreateNortification(project[0].SlackInfo.BotToken, project[0].SlackInfo.ChanelId, issue)
+			if SlackMsg != "" {
+				ErrMessage += "," + SlackMsg
+			}
 		}
+	} else {
+		return false, "Duplicate Issue"
 	}
 
-	return result
+	return result, ErrMessage
 }
 
 func checkIssueExisted(issuelist []Models.Issue, issue Models.Issue) bool {

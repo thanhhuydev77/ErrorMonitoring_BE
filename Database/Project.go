@@ -185,6 +185,7 @@ func UpdateIssueList(project Models.Project) bool {
 	//Perform UpdateOne operation & validate against the error.
 	_, err := collection.UpdateOne(context.TODO(), filter, updater)
 	if err != nil {
+		log.Print(err.Error())
 		return false
 	}
 	//Return success without any error.

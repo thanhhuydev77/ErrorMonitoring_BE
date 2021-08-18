@@ -5,20 +5,20 @@ import (
 )
 
 type Project struct {
-	Id           string     `json:"id"`
-	Name         string     `json:"name"`
-	Platform     string     `json:"platform"`
-	UserList     []UserRole `json:"userList"`
-	Issues       []Issue    `json:"issues"`
-	EnvList      []string   `json:"envList"`
-	CreateTime   time.Time  `json:"createTime"`
-	CreateUser   string     `json:"createUser"`
-	Active       bool       `json:"active"`
-	Suites       []Suite    `json:"suites"`
-	EnableTrello bool       `json:"enableTrello"`
-	TrelloInfo   TrelloInfo `json:"trelloInfo"`
-	EnableSlack  bool       `json:"enableSlack"`
-	SlackInfo    SlackInfo  `json:"slackInfo"`
+	Id           string     `json:"id" bson:"id"`
+	Name         string     `json:"name" bson:"name"`
+	Platform     string     `json:"platform" bson:"platform"`
+	UserList     []UserRole `json:"userList" bson:"user_list"`
+	Issues       []Issue    `json:"issues" bson:"issues"`
+	EnvList      []string   `json:"envList" bson:"envList"`
+	CreateTime   time.Time  `json:"createTime" bson:"createTime"`
+	CreateUser   string     `json:"createUser" bson:"createUser"`
+	Active       bool       `json:"active" bson:"active"`
+	Suites       []Suite    `json:"suites" bson:"suites"`
+	EnableTrello bool       `json:"enableTrello" bson:"enableTrello"`
+	TrelloInfo   TrelloInfo `json:"trelloInfo" bson:"trelloInfo"`
+	EnableSlack  bool       `json:"enableSlack" bson:"enableSlack"`
+	SlackInfo    SlackInfo  `json:"slackInfo" bson:"slackInfo"`
 }
 
 type UserRole struct {
