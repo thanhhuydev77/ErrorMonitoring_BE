@@ -8,7 +8,7 @@ type Project struct {
 	Id           string     `json:"id" bson:"id"`
 	Name         string     `json:"name" bson:"name"`
 	Platform     string     `json:"platform" bson:"platform"`
-	UserList     []UserRole `json:"userList" bson:"user_list"`
+	UserList     []UserRole `json:"userList" bson:"userList"`
 	Issues       []Issue    `json:"issues" bson:"issues"`
 	EnvList      []string   `json:"envList" bson:"envList"`
 	CreateTime   time.Time  `json:"createTime" bson:"createTime"`
