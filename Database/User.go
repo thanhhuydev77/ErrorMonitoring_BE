@@ -195,7 +195,7 @@ func UpdateProjectList(user Models.User) bool {
 	var updater bson.D
 	//Define updater for to specifiy change to be updated.
 	updater = bson.D{primitive.E{Key: "$set", Value: bson.D{
-		primitive.E{Key: "projectlist", Value: user.ProjectList},
+		primitive.E{Key: "projectList", Value: user.ProjectList},
 	}}}
 	collection := clientInstance.Database(CONST.DB).Collection(CONST.User)
 
