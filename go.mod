@@ -11,6 +11,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/pkg/errors v0.9.1
+	github.com/rickar/cal/v2 v2.0.1
 	github.com/rs/cors v1.8.0
 	github.com/slack-go/slack v0.9.4
 	go.mongodb.org/mongo-driver v1.7.1

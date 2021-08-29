@@ -37,6 +37,8 @@ func IssueRequest(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		//mail to assignee,manager,admin
+
 		result := General.CreateResponse(1, `Create Issue successfully!`, ErrMsg)
 		io.WriteString(w, result)
 		return

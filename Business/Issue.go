@@ -14,10 +14,31 @@ func CreateIssue(ProjectId string, issue Models.Issue) (bool, string) {
 	result := false
 	ErrMessage := ""
 	project, Err := Database.GetProjectWithIssue(ProjectId)
+
 	if Err != nil || len(project) == 0 {
 		return false, "ProjectId is invalid"
 	}
+
 	if !checkIssueExisted(project[0].Issues, issue) {
+		//get list of issues
+		//suggest assignee
+		if project[0].AutoSuggestPerson {
+			listMember := project[0].UserList
+			//add author - 0.5K
+			for i, val := range listMember {
+				if val.NameInProduct == issue.Assignee {
+					listMember[i].TimeEstimate -= val.Ability * 0.5
+				}
+			}
+			//get min T
+			assignee := Models.GetMemberMinT(listMember)
+			//set assignee
+			issue.Assignee = assignee
+		}
+
+		//or not
+		//suggest how to fix
+
 		project[0].Issues = append(project[0].Issues, issue)
 		result = Database.UpdateIssueList(project[0])
 		//integrate Trello and Slack
@@ -41,12 +62,23 @@ func CreateIssue(ProjectId string, issue Models.Issue) (bool, string) {
 	} else {
 		return false, "Duplicate Issue"
 	}
-
+	if project[0].EnableMailNotification {
+		MailToAdminAndOwner(project[0].UserList, issue)
+		MailToAssignee(issue)
+	}
 	return result, ErrMessage
 }
 
-func checkIssueExisted(issuelist []Models.Issue, issue Models.Issue) bool {
-	for _, Issue := range issuelist {
+func MailToAdminAndOwner(list []Models.UserRole, issue Models.Issue) {
+
+}
+
+func MailToAssignee(issue Models.Issue) {
+
+}
+
+func checkIssueExisted(issues []Models.Issue, issue Models.Issue) bool {
+	for _, Issue := range issues {
 		if Issue.CheckCode == issue.CheckCode {
 			if Issue.Status == CONST.PROCESSING || Issue.Status == CONST.UNRESOLVED {
 				return true
@@ -91,24 +123,39 @@ func UpdateIssue(ProjectId string, issue Models.Issue) bool {
 	if Err != nil || len(project) == 0 {
 		return false
 	}
+	oldAssignee := ""
+	newAssignee := issue.Assignee
 	for i := range project[0].Issues {
 		if project[0].Issues[i].Id == issue.Id {
+			project[0].Issues[i].StartDate = issue.StartDate
 			project[0].Issues[i].Assignee = issue.Assignee
 			project[0].Issues[i].DueDate = issue.DueDate
 			project[0].Issues[i].Priority = issue.Priority
 			project[0].Issues[i].Status = issue.Status
+			oldAssignee = project[0].Issues[i].Assignee
 			haveRec = true
 			break
 		}
 	}
 	if haveRec {
 		result = Database.UpdateIssueList(project[0])
+		if oldAssignee != newAssignee {
+			go UpdateKAndT(project[0], oldAssignee)
+		}
+		go UpdateKAndT(project[0], newAssignee)
+
 	}
 	return result
 }
 
-func GetIssue(ProjectId string, Id string) (Models.Issue, bool) {
+func UpdateKAndT(project Models.Project, assignee string) {
+	//update K
+	Database.UpdateAbility(project, assignee)
+	//update T
+	Database.UpdateTimeEstimate(project, assignee)
+}
 
+func GetIssue(ProjectId string, Id string) (Models.Issue, bool) {
 	project, Err := Database.GetProjectWithIssue(ProjectId)
 	if Err != nil || len(project) == 0 {
 		return Models.Issue{}, false

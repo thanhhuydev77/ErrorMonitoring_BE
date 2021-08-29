@@ -1,7 +1,9 @@
 package Database
 
+import "C"
 import (
 	"context"
+	"github.com/rickar/cal/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -9,6 +11,7 @@ import (
 	"log"
 	"main.go/CONST"
 	"main.go/Models"
+	"time"
 )
 
 func CreateProject(project Models.Project) (bool, CONST.ErrorCode) {
@@ -109,7 +112,7 @@ func UpdateUserList(project Models.Project) bool {
 	var updater bson.D
 	//Define updater for to specifiy change to be updated.
 	updater = bson.D{primitive.E{Key: "$set", Value: bson.D{
-		primitive.E{Key: "userlist", Value: project.UserList},
+		primitive.E{Key: "userList", Value: project.UserList},
 	}}}
 	collection := clientInstance.Database(CONST.DB).Collection(CONST.Project)
 
@@ -296,4 +299,69 @@ func UpdateIntegration(project Models.Project, Type int) bool {
 	}
 	//Return success without any error.
 	return true
+}
+
+func UpdateAbility(project Models.Project, assignee string) {
+	log.Print("Start Update K")
+	//C := cal.NewBusinessCalendar()
+	for i, val := range project.UserList {
+		if val.Role != "editor" {
+			continue
+		}
+		if assignee != "" && val.Email != assignee {
+			continue
+		}
+		project.UserList[i].Ability = 0
+		K := 0.0
+		Ki := 0
+		for _, issue := range project.Issues {
+			//calc on only resolved issue
+			if issue.Assignee == val.Email && issue.Status == "resolved" {
+				//only Start date != nil
+				if issue.StartDate.After(time.Time{}) {
+					IssueCal := Models.ConvertIssueForCalc(issue)
+					//init DueDate when uninitialised
+					if IssueCal.DueDate.Equal(time.Time{}) {
+						IssueCal.DueDate = time.Now()
+					}
+					K += cal.NewBusinessCalendar().WorkHoursInRange(IssueCal.StartDate, IssueCal.DueDate).Hours() / (IssueCal.Environment * IssueCal.Priority)
+					Ki++
+				}
+			}
+		}
+
+		if Ki > 0 {
+			project.UserList[i].Ability = K / float64(Ki)
+		}
+	}
+	UpdateUserList(project)
+	log.Print("Finish Update K")
+}
+func UpdateTimeEstimate(project Models.Project, assignee string) {
+	log.Print("Start Update T")
+	for i, val := range project.UserList {
+		if val.Role != "editor" {
+			continue
+		}
+		if assignee != "" && val.Email != assignee {
+			continue
+		}
+		project.UserList[i].TimeEstimate = 0
+		for _, issue := range project.Issues {
+			//calc on only resolved issue
+			if issue.Assignee == val.Email && issue.Status != "resolved" {
+				//only Start date != nil
+				if issue.StartDate.After(time.Time{}) {
+					IssueCal := Models.ConvertIssueForCalc(issue)
+					//init DueDate when uninitialised
+					if IssueCal.DueDate.Equal(time.Time{}) {
+						IssueCal.DueDate = time.Now()
+					}
+					project.UserList[i].TimeEstimate += val.Ability * ((100 - IssueCal.Status) / 100) * IssueCal.Priority * IssueCal.Environment
+				}
+			}
+		}
+	}
+	UpdateUserList(project)
+	log.Print("Finish Update T")
 }
