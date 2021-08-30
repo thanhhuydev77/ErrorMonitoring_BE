@@ -139,7 +139,7 @@ func checkPasswordHash(password, hash string) bool {
 
 //
 ////get a user or all user(id = -1)
-func GetUsers(Id string) ([]Models.User, error) {
+func GetUsers(Email string) ([]Models.User, error) {
 
 	//db, err := connectdatabase()
 	//// Query all users
@@ -150,10 +150,10 @@ func GetUsers(Id string) ([]Models.User, error) {
 	//defer db.Close()
 	list := []Models.User{}
 	var filter bson.D
-	if Id == "" {
+	if Email == "" {
 		filter = bson.D{primitive.E{}} //bson.D{{}} specifies 'all documents'
 	} else {
-		filter = bson.D{primitive.E{Key: "email", Value: Id}}
+		filter = bson.D{primitive.E{Key: "email", Value: Email}}
 	}
 	client, err := GetMongoClient()
 	if err != nil {

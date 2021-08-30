@@ -2,5 +2,7 @@
   "DBConnectionURL": "mongodb+srv://hathanhhuy:Thanhhuyd71t9@mycluster.5dvo9.mongodb.net/test?authSource=admin&replicaSet=atlas-f8f9l2-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true",
   "SECRET_KEY" : "thisissecreckeyyesitisreallyofcourcetrustmeitiskeyofthisapphahaha",
   "HostMail" : "errormonitoringvn@gmail.com",
-  "HostMailPassword" : "Thanhhuyd71t9"
+  "HostMailPassword" : "Thanhhuyd71t9",
+  "UILink": "https://error-monitoring.vercel.app/",
+  "IssuesPath": "dashboard/issues"
 }

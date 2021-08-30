@@ -2,10 +2,12 @@ package Business
 
 import (
 	"github.com/pkg/errors"
+	"log"
 	"main.go/CONST"
 	"main.go/Database"
 	"main.go/General"
 	"main.go/Models"
+	"strconv"
 	"time"
 )
 
@@ -63,18 +65,47 @@ func CreateIssue(ProjectId string, issue Models.Issue) (bool, string) {
 		return false, "Duplicate Issue"
 	}
 	if project[0].EnableMailNotification {
-		MailToAdminAndOwner(project[0].UserList, issue)
-		MailToAssignee(issue)
+		MailToAdminAndOwner(project[0])
+		MailToAssignee(project[0], issue)
 	}
 	return result, ErrMessage
 }
 
-func MailToAdminAndOwner(list []Models.UserRole, issue Models.Issue) {
+func MailToAdminAndOwner(project Models.Project) {
+	log.Print("Start Mailing to admin and owner")
+	Object := "[" + project.Name + "]" + "New Issue Created"
+	Text := Models.AppConfig.UILink + Models.AppConfig.IssuesPath
+	for _, val := range project.UserList {
+		if val.Role == "owner" || val.Role == "admin" {
+			Name := ""
+			user, err := Database.GetUsers(val.Email)
+			if err != nil || len(user) == 0 {
+				Name = "Sir/Madam"
+			} else {
+				Name = user[0].FullName
+			}
+			result := General.SendMail(val.Email, Object, Text, Name, "MailToAdminAndOwner.html")
 
+			log.Print("mail to " + val.Email + " result:" + strconv.FormatBool(result))
+		}
+	}
+	log.Print("finish mailing to admin and owner")
 }
 
-func MailToAssignee(issue Models.Issue) {
-
+func MailToAssignee(project Models.Project, issue Models.Issue) {
+	log.Print("Start mailing to assignee")
+	Object := "[" + project.Name + "]" + "New Issue Created"
+	Text := Models.AppConfig.UILink + Models.AppConfig.IssuesPath
+	Name := ""
+	user, err := Database.GetUsers(issue.Assignee)
+	if err != nil || len(user) == 0 {
+		Name = "Sir/Madam"
+	} else {
+		Name = user[0].FullName
+	}
+	result := General.SendMail(issue.Assignee, Object, Text, Name, "MailToAssignee.html")
+	log.Print("mail to " + issue.Assignee + " result:" + strconv.FormatBool(result))
+	log.Print("finish mail to assignee ")
 }
 
 func checkIssueExisted(issues []Models.Issue, issue Models.Issue) bool {

@@ -7,4 +7,6 @@ type Config struct {
 	AppKey           string `json:"SECRET_KEY"`
 	HostMail         string `json:"HostMail"`
 	HostMailPassword string `json:"HostMailPassword"`
+	UILink           string `json:"UILink"`
+	IssuesPath       string `json:"IssuesPath"`
 }

@@ -100,7 +100,7 @@ func UserRequest(w http.ResponseWriter, r *http.Request) {
 		//token
 		token := GenerateToken(user.User.Email)
 		//mail
-		SentOK := General.SendMail(user.User.Email, CONST.EMAILSUBJECT, strconv.Itoa(randCode), user.User.FullName)
+		SentOK := General.SendMail(user.User.Email, CONST.EMAILSUBJECT, strconv.Itoa(randCode), user.User.FullName, "Mail2.html")
 
 		if SentOK {
 			type data struct {
