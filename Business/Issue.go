@@ -36,6 +36,8 @@ func CreateIssue(ProjectId string, issue Models.Issue) (bool, string) {
 			assignee := Models.GetMemberMinT(listMember)
 			//set assignee
 			issue.Assignee = assignee
+		} else {
+			issue.Assignee = ""
 		}
 
 		//or not
@@ -66,7 +68,9 @@ func CreateIssue(ProjectId string, issue Models.Issue) (bool, string) {
 	}
 	if project[0].EnableMailNotification {
 		MailToAdminAndOwner(project[0])
-		MailToAssignee(project[0], issue)
+		if issue.Assignee != "" {
+			MailToAssignee(project[0], issue)
+		}
 	}
 	return result, ErrMessage
 }
