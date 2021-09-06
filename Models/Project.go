@@ -27,7 +27,7 @@ type Project struct {
 type UserRole struct {
 	Email         string `json:"email"`
 	Role          string `json:"role"`
-	NameInProduct string `json:"NameInProduct" bson:"nameInProduct"`
+	NameInProduct string `json:"nameInProduct" bson:"nameInProduct"`
 	//K
 	Ability float64 `json:"ability"`
 	//T
