@@ -301,6 +301,56 @@ func UpdateIntegration(project Models.Project, Type int) bool {
 	return true
 }
 
+func UpdateAutoSuggest(project Models.Project) bool {
+	if clientInstance == nil {
+		Err := "can not connect to database!"
+		log.Print(Err)
+		return false
+	}
+
+	filter := bson.D{primitive.E{Key: "id", Value: project.Id}}
+	updater := bson.D{}
+
+	updater = bson.D{primitive.E{Key: "$set", Value: bson.D{
+		primitive.E{Key: "autoSuggestPerson", Value: project.AutoSuggestPerson},
+		primitive.E{Key: "autoSuggestSolution", Value: project.AutoSuggestSolution},
+	}}}
+
+	collection := clientInstance.Database(CONST.DB).Collection(CONST.Project)
+
+	//Perform UpdateOne operation & validate against the error.
+	_, err := collection.UpdateOne(context.TODO(), filter, updater)
+	if err != nil {
+		return false
+	}
+	//Return success without any error.
+	return true
+}
+func UpdateAutoSentMail(project Models.Project) bool {
+	if clientInstance == nil {
+		Err := "can not connect to database!"
+		log.Print(Err)
+		return false
+	}
+
+	filter := bson.D{primitive.E{Key: "id", Value: project.Id}}
+	updater := bson.D{}
+
+	updater = bson.D{primitive.E{Key: "$set", Value: bson.D{
+		primitive.E{Key: "enableMailNotification", Value: project.EnableMailNotification},
+	}}}
+
+	collection := clientInstance.Database(CONST.DB).Collection(CONST.Project)
+
+	//Perform UpdateOne operation & validate against the error.
+	_, err := collection.UpdateOne(context.TODO(), filter, updater)
+	if err != nil {
+		return false
+	}
+	//Return success without any error.
+	return true
+}
+
 func UpdateAbility(project Models.Project, assignee string) {
 	log.Print("Start Update K")
 	//C := cal.NewBusinessCalendar()

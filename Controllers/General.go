@@ -88,9 +88,9 @@ func InitAllController(r *mux.Router) {
 	r.Handle("/suite/{projectId}/{Id}", AuthMW(http.HandlerFunc(GetSuite))).Methods("GET")
 
 	//Trello Integration
-	r.HandleFunc("/TestTrello", TestTrello).Methods("POST")
+	//r.HandleFunc("/TestTrello", TestTrello).Methods("POST")
 	r.HandleFunc("/GetListBoard", GetListBoard).Methods("GET")
 
 	//Slack Integration
-	r.HandleFunc("/TestSlack", TestSlack).Methods("POST")
+	//r.HandleFunc("/TestSlack", TestSlack).Methods("POST")
 }

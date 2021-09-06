@@ -160,3 +160,13 @@ func UpdateTrelloInfo(project Models.Project) bool {
 func UpdateSlackInfo(project Models.Project) bool {
 	return Database.UpdateIntegration(project, 2)
 }
+
+//update Auto Suggest
+func UpdateAutoSuggest(project Models.Project) bool {
+	return Database.UpdateAutoSuggest(project)
+}
+
+//update Auto Sent mail
+func UpdateAutoSentMail(project Models.Project) bool {
+	return Database.UpdateAutoSentMail(project)
+}

@@ -126,6 +126,36 @@ func ProjectRequest(w http.ResponseWriter, r *http.Request) {
 			io.WriteString(w, result)
 			return
 		}
+	case "update-Auto-Suggest":
+		{
+			ChangeTrelloInfoOK := false
+			if len(projectRequest.Project.Id) > 0 {
+				ChangeTrelloInfoOK = Business.UpdateAutoSuggest(projectRequest.Project)
+			}
+			if !ChangeTrelloInfoOK {
+				result := General.CreateResponse(0, `Change Auto Suggest failed!`, Models.EmptyObject{})
+				io.WriteString(w, result)
+				return
+			}
+			result := General.CreateResponse(1, `Change Auto Suggest success!`, Models.EmptyObject{})
+			io.WriteString(w, result)
+			return
+		}
+	case "update-Mail-Notification":
+		{
+			ChangeTrelloInfoOK := false
+			if len(projectRequest.Project.Id) > 0 {
+				ChangeTrelloInfoOK = Business.UpdateAutoSentMail(projectRequest.Project)
+			}
+			if !ChangeTrelloInfoOK {
+				result := General.CreateResponse(0, `Change Mail Notification failed!`, Models.EmptyObject{})
+				io.WriteString(w, result)
+				return
+			}
+			result := General.CreateResponse(1, `Change Mail Notification success!`, Models.EmptyObject{})
+			io.WriteString(w, result)
+			return
+		}
 	}
 
 }
