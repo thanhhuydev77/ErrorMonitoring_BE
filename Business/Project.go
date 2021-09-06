@@ -92,6 +92,7 @@ func ModifyMember(email string, ParamProject Models.Project) bool {
 			for _, paramUserList := range ParamProject.UserList {
 				if paramUserList.Email == CurrentProject[0].UserList[i].Email {
 					CurrentProject[0].UserList[i].Role = paramUserList.Role
+					CurrentProject[0].UserList[i].NameInProduct = paramUserList.NameInProduct
 
 					//update project-role of user
 					CurrentUser, Err := Database.GetUsers(CurrentProject[0].UserList[i].Email)
