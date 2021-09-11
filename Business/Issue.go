@@ -183,6 +183,33 @@ func UpdateIssue(ProjectId string, issue Models.Issue) bool {
 	return result
 }
 
+func UpdateIssueReviewer(ProjectId string, issue Models.Issue) bool {
+	result := false
+	haveRec := false
+	project, Err := Database.GetProjectWithIssue(ProjectId)
+	if Err != nil || len(project) == 0 {
+		return false
+	}
+	oldAssignee := ""
+	newAssignee := issue.Assignee
+	for i := range project[0].Issues {
+		if project[0].Issues[i].Id == issue.Id {
+			project[0].Issues[i].Reviewer = issue.Reviewer
+			haveRec = true
+			break
+		}
+	}
+	if haveRec {
+		result = Database.UpdateIssueList(project[0])
+		if oldAssignee != newAssignee {
+			go UpdateKAndT(project[0], oldAssignee)
+		}
+		go UpdateKAndT(project[0], newAssignee)
+
+	}
+	return result
+}
+
 func UpdateKAndT(project Models.Project, assignee string) {
 	//update K
 	Database.UpdateAbility(project, assignee)

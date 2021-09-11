@@ -71,6 +71,7 @@ func InitAllController(r *mux.Router) {
 	r.Handle("/user", AuthMW(http.HandlerFunc(authenUser))).Methods("GET")
 	r.Handle("/user/{Id}", AuthMW(http.HandlerFunc(GetUserByProjectId))).Methods("GET")
 	r.Handle("/user/search", AuthMW(http.HandlerFunc(SearchInUser))).Methods("PUT")
+
 	//Project Controllers
 	r.Handle("/project", AuthMW(http.HandlerFunc(ProjectRequest))).Methods("POST")
 	r.Handle("/project", AuthMW(http.HandlerFunc(GetProject))).Methods("GET")
@@ -82,6 +83,8 @@ func InitAllController(r *mux.Router) {
 	r.HandleFunc("/issue/{projectId}", IssueRequest).Methods("POST")
 	r.Handle("/issue/{projectId}", AuthMW(http.HandlerFunc(IssueRequest))).Methods("PUT")
 	r.Handle("/issue/{projectId}/{Id}", AuthMW(http.HandlerFunc(GetIssue))).Methods("GET")
+	//change reviewer
+	//add comment
 
 	//Automation test suites Controllers
 	r.HandleFunc("/suite/{projectId}", SuiteRequest).Methods("POST")

@@ -28,7 +28,8 @@ func IssueRequest(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, result)
 		return
 	}
-	if issueRequest.Type == "create-issue" {
+	switch issueRequest.Type {
+	case "create-issue":
 		CreateOK, ErrMsg := Business.CreateIssue(projectId, issueRequest.Issue)
 
 		if !CreateOK {
@@ -36,14 +37,12 @@ func IssueRequest(w http.ResponseWriter, r *http.Request) {
 			io.WriteString(w, result)
 			return
 		}
-
 		//mail to assignee,manager,admin
 
 		result := General.CreateResponse(1, `Create Issue successfully!`, ErrMsg)
 		io.WriteString(w, result)
-		return
-	}
-	if issueRequest.Type == "update-issue" {
+		break
+	case "update-issue":
 		UpdateOK := Business.UpdateIssue(projectId, issueRequest.Issue)
 
 		if !UpdateOK {
@@ -55,6 +54,20 @@ func IssueRequest(w http.ResponseWriter, r *http.Request) {
 		result := General.CreateResponse(1, `Update Issue successfully!`, Models.EmptyObject{})
 		io.WriteString(w, result)
 		return
+		break
+	case "update-reviewer":
+		UpdateOK := Business.UpdateIssueReviewer(projectId, issueRequest.Issue)
+
+		if !UpdateOK {
+			result := General.CreateResponse(0, `Update Issue Reviewer failed!`, Models.EmptyObject{})
+			io.WriteString(w, result)
+			return
+		}
+
+		result := General.CreateResponse(1, `Update Issue Reviewer successfully!`, Models.EmptyObject{})
+		io.WriteString(w, result)
+		return
+		break
 	}
 
 }
