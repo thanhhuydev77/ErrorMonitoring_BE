@@ -29,22 +29,22 @@ func TrelloCreateCard(appKey string, token string, boardId string, listId string
 	}
 	return true, ""
 }
-func SlackCreateNortification(botToken string, ChannelId string, issue Models.Issue) (bool, string) {
+func SlackCreateNortification(botToken string, ChannelId string, issue Models.Issue, project Models.Project) (bool, string) {
 	api := slack.New(botToken)
-	attachment := slack.Attachment{
-		Pretext: issue.Description,
-		Text:    "automate!",
-	}
+	//attachment := slack.Attachment{
+	//	Pretext: issue.Description,
+	//	Text:    "automate!",
+	//}
+	Text := "Hello <!here>, \n *There is New issue 👾 | " + project.Name + "* \n --- \n Name: " + issue.Name + " \n Description: " + issue.Description + " \n Path of issue: " + issue.Path + " \n Exception: \n ```" + issue.Frame + "``` Additional Data: \n ```" + issue.Detail + "``` --- \n " + Models.AppConfig.UILink + Models.AppConfig.IssuesPath + "/" + project.Id + "/" + issue.Id
 	_, _, err := api.PostMessage(
 		ChannelId,
-		slack.MsgOptionText(issue.Detail, false),
-		slack.MsgOptionAttachments(attachment),
+		slack.MsgOptionText(Text, false),
 		slack.MsgOptionAsUser(true),
 	)
 
 	if err != nil {
-		log.Print("%s\n", err)
-		return false, "something went wrong"
+		log.Print(err)
+		return false, err.Error()
 	}
 	return true, ""
 }

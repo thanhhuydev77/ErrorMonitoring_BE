@@ -58,7 +58,7 @@ func CreateIssue(ProjectId string, issue Models.Issue) (bool, string) {
 		}
 		if project[0].EnableSlack {
 			SlackMsg := ""
-			_, SlackMsg = General.SlackCreateNortification(project[0].SlackInfo.BotToken, project[0].SlackInfo.ChanelId, issue)
+			_, SlackMsg = General.SlackCreateNortification(project[0].SlackInfo.BotToken, project[0].SlackInfo.ChanelId, issue, project[0])
 			if SlackMsg != "" {
 				ErrMessage += "," + SlackMsg
 			}
