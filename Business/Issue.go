@@ -29,6 +29,10 @@ func CreateIssue(ProjectId string, issue Models.Issue) (bool, string) {
 			//add author - 0.5K
 			for i, val := range listMember {
 				if val.NameInProduct == issue.Assignee {
+					//occurs when start a project
+					if val.Ability == 0 {
+						val.Ability = 1
+					}
 					listMember[i].TimeEstimate -= val.Ability * 0.5
 				}
 			}
