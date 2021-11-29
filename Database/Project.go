@@ -80,7 +80,7 @@ func GetProject(Id string) ([]Models.Project, error) {
 	//Create a handle to the respective collection in the database.
 	collection := client.Database(CONST.DB).Collection(CONST.Project)
 	//Perform Find operation & validate against the error.
-	cur, findError := collection.Find(context.TODO(), filter, options.Find().SetProjection(bson.M{"issues": 0}))
+	cur, findError := collection.Find(context.TODO(), filter, options.Find())
 	if findError != nil {
 		return list, findError
 	}
@@ -326,6 +326,7 @@ func UpdateAutoSuggest(project Models.Project) bool {
 	//Return success without any error.
 	return true
 }
+
 func UpdateAutoSentMail(project Models.Project) bool {
 	if clientInstance == nil {
 		Err := "can not connect to database!"
@@ -387,6 +388,7 @@ func UpdateAbility(project Models.Project, assignee string) {
 	UpdateUserList(project)
 	log.Print("Finish Update K")
 }
+
 func UpdateTimeEstimate(project Models.Project, assignee string) {
 	log.Print("Start Update T")
 	for i, val := range project.UserList {

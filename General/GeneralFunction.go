@@ -16,20 +16,11 @@ import (
 	"time"
 )
 
-//func ConvertUserRequesttoUser(request Models.UserRequest) Models.User {
-//	var user Models.User
-//	user.Email = request.Email
-//	user.PassWord = request.PassWord
-//	user.FullName = request.FullName
-//	return user
-//}
-
 func SendMail(to string, object string, text string, Name string, Template string) bool {
 	m := gomail.NewMessage()
 
 	// Set E-Mail sender
 	m.SetHeader("From", Models.AppConfig.HostMail)
-
 	// Set E-Mail receivers
 	m.SetHeader("To", to)
 
@@ -59,7 +50,6 @@ func SendMail(to string, object string, text string, Name string, Template strin
 
 	// Settings for SMTP server
 	d := gomail.NewDialer("smtp.gmail.com", 587, Models.AppConfig.HostMail, Models.AppConfig.HostMailPassword)
-
 	// This is only needed when SSL/TLS certificate is not valid on server.
 	// In production this should be set to false.
 	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
