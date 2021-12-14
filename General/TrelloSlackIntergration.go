@@ -54,5 +54,6 @@ func GetListInBoard(appToken string, userId string, boardId string) []*trello.Li
 	board, _ := client.GetBoard(boardId, trello.Defaults())
 	//get list
 	lists, _ := board.GetLists(trello.Defaults())
+	board.GetLabels()
 	return lists
 }

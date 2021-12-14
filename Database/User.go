@@ -87,19 +87,19 @@ func Update(user Models.User) bool {
 			primitive.E{Key: "fullName", Value: user.FullName},
 			primitive.E{Key: "password", Value: user.Password},
 			primitive.E{Key: "avatar", Value: user.Avatar},
-			primitive.E{Key: "mainplatform", Value: user.MainPlatform},
+			primitive.E{Key: "mainPlatform", Value: user.MainPlatform},
 			primitive.E{Key: "position", Value: user.Position},
 			primitive.E{Key: "organization", Value: user.Organization},
 			primitive.E{Key: "projectList", Value: user.ProjectList},
 		}}}
 	} else {
 		updater = bson.D{primitive.E{Key: "$set", Value: bson.D{
-			primitive.E{Key: "fullname", Value: user.FullName},
+			primitive.E{Key: "fullName", Value: user.FullName},
 			primitive.E{Key: "avatar", Value: user.Avatar},
-			primitive.E{Key: "mainplatform", Value: user.MainPlatform},
+			primitive.E{Key: "mainPlatform", Value: user.MainPlatform},
 			primitive.E{Key: "position", Value: user.Position},
 			primitive.E{Key: "organization", Value: user.Organization},
-			primitive.E{Key: "projectlist", Value: user.ProjectList},
+			primitive.E{Key: "projectList", Value: user.ProjectList},
 		}}}
 	}
 
